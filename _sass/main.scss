@@ -1,10 +1,11 @@
 body {
+  background-color: #f1f1f13d;
   font-size: 14px;
   line-height: 20px;
   font-weight: normal;
   font-style: normal;
   font-family: consolas, monaco, courier, "courier new", fixed-width;
-  color: #333333;
+  color: #2f508ee0;
   padding: 20px;
   margin: 0;
   -webkit-font-smoothing: antialiased;
@@ -54,6 +55,11 @@ blockquote {
   -webkit-animation-duration: 0.7s;
   -webkit-animation-fill-mode: both;
   -webkit-animation-name: bounce;
+  img {
+      align: center;
+      width: 80px;
+      height: 80px;
+  }
   a {
     background: #ddd url("gravatar_wrapper.png");
     color: #000;
@@ -70,7 +76,7 @@ blockquote {
     box-sizing: border-box;
     &:hover,
     &:focus {
-      background: #f14e32;
+      background: #96c0c7;
     }
     &:hover + .logo-prompt,
     &:focus + .logo-prompt {

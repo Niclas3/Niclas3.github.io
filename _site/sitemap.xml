@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>http://zhaosanmusi.net/notes/very-long-title-post</loc>
+    <loc>/2016/10/18/very-long-title-post.html</loc>
     <lastmod>2016-10-18T00:00:00+08:00</lastmod>
   </url>
   <url>
-    <loc>http://zhaosanmusi.net/notes/download-this-theme</loc>
+    <loc>/2015/09/09/download-this-theme.html</loc>
     <lastmod>2015-09-09T00:00:00+08:00</lastmod>
   </url>
   <url>
-    <loc>http://zhaosanmusi.net/notes/lorem-ipsum</loc>
+    <loc>/2015/09/06/lorem-ipsum.html</loc>
     <lastmod>2015-09-06T00:00:00+08:00</lastmod>
   </url>
   <url>
-    <loc>http://zhaosanmusi.net/404.html</loc>
+    <loc>/404.html</loc>
   </url>
   <url>
-    <loc>http://zhaosanmusi.net/about.html</loc>
+    <loc>/about.html</loc>
   </url>
   <url>
-    <loc>http://zhaosanmusi.net/</loc>
+    <loc>/</loc>
   </url>
 </urlset>
