@@ -1,22 +1,22 @@
 # Site Info
 title:              "zhaosanmusi"
 description:        "朝三暮四的养猴子"
-google_verify:      # Put your Google Verification here
-google_analytics:   # Put your Google Analytics code
+# google_verify:      # Put your Google Verification here
+# google_analytics:   # Put your Google Analytics code
 
 # Author Info
 author_name:        "M" # Your name here
 author_email:       urchin@zhaosanmusi.com # Your email here
-author_gravatar:    2b38b1b0e7e08b69379bd61582adf0c8 # Your Gravatar md5 hash here for logo
-twitter_username:   none # Your Twitter username here
-github_username:    none # Your GitHub username here
+# author_gravatar:         # Your Gravatar md5 hash here for logo
+# twitter_username:        # Your Twitter username here
+# github_username:         # Your GitHub username here
 
 # Site Settings
-url:                http://zhaosanmusi.net # main url
-#baseurl:            / # for gh-pages
-permalink:          /notes/:title # Post permalink
-timezone:           Asia/Shanghai # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-mathjax:            true  # enables support for mathjax - set to false to disable
+# url:                http://zhaosanmusi.net # main url
+# #baseurl:            / # for gh-pages
+# permalink:          /notes/:title # Post permalink
+# timezone:           Asia/Shanghai # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+# mathjax:            true  # enables support for mathjax - set to false to disable
 
 # Site Build
 highlighter:        rouge
