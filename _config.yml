@@ -1,5 +1,5 @@
 # Site Info
-title:              "The Plain"
+title:              "zhaosanmusi"
 description:        "朝三暮四的养猴子"
 google_verify:      # Put your Google Verification here
 google_analytics:   # Put your Google Analytics code
@@ -12,8 +12,8 @@ twitter_username:   none # Your Twitter username here
 github_username:    none # Your GitHub username here
 
 # Site Settings
-url:                https://www.zhaosanmusi.net # main url
-baseurl:            / # for gh-pages
+url:                http://zhaosanmusi.net # main url
+#baseurl:            / # for gh-pages
 permalink:          /notes/:title # Post permalink
 timezone:           Asia/Shanghai # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 mathjax:            true  # enables support for mathjax - set to false to disable
