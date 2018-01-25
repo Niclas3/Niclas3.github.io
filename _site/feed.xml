@@ -1,89 +1,249 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>zhaosanmusi</title>
-    <description></description>
-    <link>http://localhost:4000/</link>
-    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Thu, 25 Jan 2018 17:35:10 +0800</pubDate>
-    <lastBuildDate>Thu, 25 Jan 2018 17:35:10 +0800</lastBuildDate>
-    <generator>Jekyll v2.5.3</generator>
+    <title>The Plain</title>
+    <description>The Plain is a minimalist Jekyll theme, that's it. Can't say anymore...</description>
+    <link>https://heiswayi.nrird.com/the-plain</link>
     
-      <item>
-        <title>test1</title>
-        <description>&lt;p&gt;总结OSX上面配置VIM + slimv的common Lisp环境&lt;/p&gt;
+      
+        <item>
+          <title>For Example of very Long Title Would Be Typography Elements in One</title>
+          <description>&lt;p&gt;&lt;strong&gt;NOTE:&lt;/strong&gt; This markdown cheatsheet is a typography demo for this theme. Check out this post to learn more about this markdown usage when you want to get started with this theme. Enjoy!&lt;/p&gt;
 
-&lt;p&gt;作者本人是一个vim使用者，一直想学函数式的语言于是就挑了Common Lisp，可是问题是CL对vim支持不想Emacs这么好，不过爱折腾的我肯定不会罢休的。&lt;/p&gt;
+&lt;h2 id=&quot;typography-elements-in-one&quot;&gt;Typography Elements in One&lt;/h2&gt;
 
-&lt;p&gt;如果你急着配置你的环境请移步&lt;strong&gt;总结&lt;/strong&gt;&lt;br /&gt;
-准备工作
-——
-1.Python环境（作者使用的是Python 2.7.x的版本）&lt;/p&gt;
+&lt;p&gt;Let’s start with a informative paragraph. &lt;strong&gt;This text is bolded.&lt;/strong&gt; But not this one! &lt;em&gt;How about italic text?&lt;/em&gt; Cool right? Ok, let’s &lt;strong&gt;&lt;em&gt;combine&lt;/em&gt;&lt;/strong&gt; them together. Yeah, that’s right! I have code to highlight, so &lt;code&gt;ThisIsMyCode()&lt;/code&gt;. What a nice! Good people will hyperlink away, so &lt;a href=&quot;#&quot;&gt;here we go&lt;/a&gt; or &lt;a href=&quot;http://www.example.com&quot;&gt;http://www.example.com&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;2.重新编译的Vim需要支持Python&lt;/p&gt;
+&lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
 
-&lt;p&gt;3.下载slimv的插件&lt;/p&gt;
+&lt;h2 id=&quot;headings-h1-to-h6&quot;&gt;Headings H1 to H6&lt;/h2&gt;
 
-&lt;h2 id=&quot;section&quot;&gt;折腾过程&lt;/h2&gt;
+&lt;h1 id=&quot;h1-heading&quot;&gt;H1 Heading&lt;/h1&gt;
 
-&lt;p&gt;作者在这些准备齐全过后按照&lt;a href=&quot;(http://www.vim.org/scripts/script.php?script_id=2531)&quot;&gt;官网&lt;/a&gt;上面的介绍解压到.vim文件夹之后使用“,c”这个快捷键呼出STREAM结果没有任何反应。然后我就在作者制作的&lt;a href=&quot;(http://kovisoft.bitbucket.org/tutorial.html)&quot;&gt;Slimv Tutorial&lt;/a&gt;第一篇里面看到原来需要一个common Lisp的编译器于是连忙用Home brew下了sbcl&lt;/p&gt;
+&lt;h2 id=&quot;h2-heading&quot;&gt;H2 Heading&lt;/h2&gt;
 
-&lt;p&gt;&lt;code&gt;brew install sbcl&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&quot;h3-heading&quot;&gt;H3 Heading&lt;/h3&gt;
 
-&lt;p&gt;安装完sbcl之后很明显还是不能用(╯‵□′)╯︵┻━┻于是我就在怀疑是不是我的VIM的配置的问题果然我又在&lt;a href=&quot;(http://kovisoft.bitbucket.org/tutorial.html)&quot;&gt;Tutorial&lt;/a&gt;里面找到了可能需要在.vimrc文件里面添加一段代码&lt;/p&gt;
+&lt;h4 id=&quot;h4-heading&quot;&gt;H4 Heading&lt;/h4&gt;
+
+&lt;h5 id=&quot;h5-heading&quot;&gt;H5 Heading&lt;/h5&gt;
+
+&lt;h6 id=&quot;h6-heading&quot;&gt;H6 Heading&lt;/h6&gt;
+
+&lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;footnote&quot;&gt;Footnote&lt;/h2&gt;
+
+&lt;p&gt;Let’s say you have text that you want to refer with a footnote, you can do that too! This is an example for the footnote number one &lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;. You can even add more footnotes, with link! &lt;sup id=&quot;fnref:2&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;blockquote&quot;&gt;Blockquote&lt;/h2&gt;
 
 &lt;blockquote&gt;
-  &lt;p&gt;On Linux this can be something like:&lt;/p&gt;
+  &lt;p&gt;Start by doing what’s necessary; then do what’s possible; and suddenly you are doing the impossible. –Francis of Assisi&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;blockquote&gt;
-  &lt;p&gt;let g:slimv_swank_cmd =’! xterm -e sbcl –load /usr/share/common-lisp/source/slime/start-swank.lisp &amp;amp;’&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;NOTE:&lt;/strong&gt; This theme does NOT support nested blockquotes.&lt;/p&gt;
 
-&lt;p&gt;这里我只介绍怎么在Mac的环境里面配置所以就不管别的平台下面的配置了所以我在我的.vimrc文件里面添加了作者给的代码&lt;/p&gt;
+&lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;code&gt;let g:slimv_swank_cmd =&#39;! xterm -e sbcl --load /usr/share/common-lisp/source/slime/start-swank.lisp &amp;amp;&#39;
-&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id=&quot;list-items&quot;&gt;List Items&lt;/h2&gt;
 
-&lt;p&gt;我们可以简单的看一下这个代码貌似是用一个终端控制台在后台开启什么东西的样子（其实是在后台开启slime这个我们后面会知道）。于是我填了代码之后还是没有什么用处。好吧，于是我就求助了Baidu和Google这两个大神了，得到的结果很不理想，基本上common Lisp环境配置都是在Emacs上面的只有很少的页面是讲怎么在OSX上面配置VIM+slimv的兜兜转转我在豆瓣的读书笔记里面找到&lt;a href=&quot;(http://book.douban.com/annotation/15415332/)&quot;&gt;这篇&lt;/a&gt;文章，从笔记里面我知道原来不能用terminal里面的vim来使用slimv，其实好像是可以的只要加上&lt;code&gt;set guioptions+=m&lt;/code&gt;来打开菜单就能使用了（我的打不开也不知道为什么有知道的vimer记得告诉我，谢谢）言归正传，知道不能在终端打开vim我只能用Macvim来代替了，果然使用了MacVim之后就可以看到菜单栏里面的slimv的选项菜单了，但是（我已经不想看到这个词了）还是不能用，不过根据上面的笔记来说，我猜我这里出的问题可能是我的MacVim不支持Python于是我准备下一下MacVim的&lt;a href=&quot;(https://code.google.com/p/macvim/wiki/Building)&quot;&gt;源代码&lt;/a&gt;来自己编译&lt;strong&gt;具体编译流程url里面很详细&lt;/strong&gt;。&lt;/p&gt;
-
-&lt;p&gt;经过一会编译出来符合要求&lt;strong&gt;支持Python和是32位的vim&lt;/strong&gt;的MacVim后再实验还是不可以。
-于是我就想会不会是common Lisp的编译器的问题于是我用&lt;strong&gt;Home brew&lt;/strong&gt;下载了ccl&lt;code&gt;brew install Clozure CL&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;把在.vimrc里面的脚本改成&lt;code&gt;let g:slimv_swank_cmd = &#39;!osascript -e &quot;tell application \&quot;Terminal\&quot; to do script \&quot;ccl --load ~/.vim/slime/start-swank.lisp\&quot;&quot;&#39;&lt;/code&gt;&lt;/p&gt;
-
-&lt;p&gt;再运行终于可以了。
-~(≧▽≦)/~&lt;/p&gt;
-
-&lt;h2 id=&quot;section-1&quot;&gt;总结&lt;/h2&gt;
-&lt;p&gt;这次对slimv的折腾，几番周折，主要没有中文的资料很麻烦后来在&lt;a href=&quot;(http://book.douban.com/annotation/15415332/)&quot;&gt;douban笔记&lt;/a&gt;里面找到了资料真的需要感谢下这个作者。
-我在梳理一下&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;First order list item&lt;/li&gt;
+  &lt;li&gt;Second item&lt;/li&gt;
+&lt;/ol&gt;
 
 &lt;ul&gt;
-  &lt;li&gt;你需要一个支持Python和32位的MacVim （你可能需要自己编译&lt;a href=&quot;(https://code.google.com/p/macvim/wiki/Building)&quot;&gt;这里&lt;/a&gt;了解细节）&lt;/li&gt;
-  &lt;li&gt;你需要一个Python的运行环境&lt;/li&gt;
-  &lt;li&gt;你需要下载slimv的插件并且解压到.vim文件夹里&lt;code&gt;unzip xxx.zip -d ~/.vim&lt;/code&gt;（&lt;a href=&quot;(http://www.vim.org/scripts/script.php?script_id=2531)&quot;&gt;这里&lt;/a&gt;下载）&lt;/li&gt;
-  &lt;li&gt;你需要一个ccl的common Lisp的解释器 &lt;code&gt;brew install Clozure CL&lt;/code&gt;&lt;/li&gt;
-  &lt;li&gt;在你的.vimrc文件里面添加&lt;code&gt;let g:slimv_swank_cmd = &#39;!osascript -e &quot;tell application \&quot;Terminal\&quot; to do script \&quot;ccl --load ~/.vim/slime/start-swank.lisp\&quot;&quot;&#39;&lt;/code&gt;（这不是必须得）&lt;/li&gt;
-  &lt;li&gt;最后打开你的MacVim跟着作者的&lt;a href=&quot;(http://kovisoft.bitbucket.org/tutorial.html)&quot;&gt;tutorial&lt;/a&gt;来学习使用吧&lt;/li&gt;
+  &lt;li&gt;Unordered list can use asterisks&lt;/li&gt;
+  &lt;li&gt;Or minuses&lt;/li&gt;
+  &lt;li&gt;Or pluses&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;最后，希望我的文章能给爱折腾的你一点用，希望你们能坚持common Lisp的学习，与你共勉&lt;/p&gt;
+&lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
 
-&lt;p&gt;&lt;a rel=&quot;license&quot; href=&quot;http://creativecommons.org/licenses/by-nc-nd/3.0/cn/&quot;&gt;&lt;img alt=&quot;知识共享许可协议&quot; style=&quot;border-width:0&quot; src=&quot;http://i.creativecommons.org/l/by-nc-nd/3.0/cn/80x15.png&quot; /&gt;&lt;/a&gt;&lt;br /&gt;本作品采用&lt;a rel=&quot;license&quot; href=&quot;http://creativecommons.org/licenses/by-nc-nd/3.0/cn/&quot;&gt;知识共享署名-非商业性使用-禁止演绎 3.0 中国大陆许可协议&lt;/a&gt;进行许可。
-&lt;strong&gt;本文章遵循CC协议，请自觉遵守    -作者Niclas&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&quot;code-blocks&quot;&gt;Code Blocks&lt;/h2&gt;
 
-&lt;p&gt;2013-12-30 20:00&lt;/p&gt;
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line-numbers&quot;&gt;&lt;a href=&quot;#n1&quot; name=&quot;n1&quot;&gt;1&lt;/a&gt;&lt;/span&gt;&lt;span style=&quot;color:#080;font-weight:bold&quot;&gt;var&lt;/span&gt; s = &lt;span style=&quot;background-color:hsla(0,100%,50%,0.05)&quot;&gt;&lt;span style=&quot;color:#710&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span style=&quot;color:#D20&quot;&gt;JavaScript syntax highlighting&lt;/span&gt;&lt;span style=&quot;color:#710&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;;
+&lt;span class=&quot;line-numbers&quot;&gt;&lt;a href=&quot;#n2&quot; name=&quot;n2&quot;&gt;2&lt;/a&gt;&lt;/span&gt;alert(s);
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 
+&lt;div class=&quot;highlighter-coderay&quot;&gt;&lt;div class=&quot;CodeRay&quot;&gt;
+  &lt;div class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line-numbers&quot;&gt;&lt;a href=&quot;#n1&quot; name=&quot;n1&quot;&gt;1&lt;/a&gt;&lt;/span&gt;s = &lt;span style=&quot;background-color:hsla(0,100%,50%,0.05)&quot;&gt;&lt;span style=&quot;color:#710&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span style=&quot;color:#D20&quot;&gt;Python syntax highlighting&lt;/span&gt;&lt;span style=&quot;color:#710&quot;&gt;&amp;quot;&lt;/span&gt;&lt;/span&gt;
+&lt;span class=&quot;line-numbers&quot;&gt;&lt;a href=&quot;#n2&quot; name=&quot;n2&quot;&gt;2&lt;/a&gt;&lt;/span&gt;&lt;span style=&quot;color:#080;font-weight:bold&quot;&gt;print&lt;/span&gt; s
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;pre&gt;&lt;code&gt;No language indicated, so no syntax highlighting.
+But let&#39;s throw in a &amp;lt;b&amp;gt;tag&amp;lt;/b&amp;gt;.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;mathematics&quot;&gt;Mathematics&lt;/h2&gt;
+
+&lt;p&gt;The theme comes ready with &lt;a href=&quot;https://www.mathjax.org/&quot;&gt;mathjax&lt;/a&gt; support built in, allowing for both simple inline equations like &lt;script type=&quot;math/tex&quot;&gt;ax^2 + bx + c = 0&lt;/script&gt; and much more complex mathematical expressions such as equation &lt;script type=&quot;math/tex&quot;&gt;\eqref{eq:sample}&lt;/script&gt; below.&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{align}
+\nabla \times \vec{\mathbf{B}} -\, \frac1c\, \frac{\partial\vec{\mathbf{E}}}{\partial t}  &amp;= \frac{4\pi}{c}\vec{\mathbf{j}} \\   
+\nabla \cdot \vec{\mathbf{E}} &amp;= 4 \pi \rho \tag{2} \label{eq:sample}\\
+\nabla \times \vec{\mathbf{E}}\, +\, \frac1c\, \frac{\partial\vec{\mathbf{B}}}{\partial t}  &amp;= \vec{\mathbf{0}} \\
+\nabla \cdot \vec{\mathbf{B}}  &amp;= 0\\
+\end{align} %]]&gt;&lt;/script&gt;
+
+&lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;table&quot;&gt;Table&lt;/h2&gt;
+
+&lt;h3 id=&quot;table-1-with-alignment&quot;&gt;Table 1: With Alignment&lt;/h3&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Tables&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;Are&lt;/th&gt;
+      &lt;th style=&quot;text-align: right&quot;&gt;Cool&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;col 3 is&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;right-aligned&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$1600&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;col 2 is&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;centered&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$12&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;zebra stripes&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;are neat&lt;/td&gt;
+      &lt;td style=&quot;text-align: right&quot;&gt;$1&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h3 id=&quot;table-2-with-typography-elements&quot;&gt;Table 2: With Typography Elements&lt;/h3&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Markdown&lt;/th&gt;
+      &lt;th&gt;Less&lt;/th&gt;
+      &lt;th&gt;Pretty&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;em&gt;Still&lt;/em&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;code&gt;renders&lt;/code&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;strong&gt;nicely&lt;/strong&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;horizontal-line&quot;&gt;Horizontal Line&lt;/h2&gt;
+
+&lt;p&gt;The HTML &lt;code&gt;&amp;lt;hr&amp;gt;&lt;/code&gt; element is for creating a “thematic break” between paragraph-level elements. In markdown, you can create a &lt;code&gt;&amp;lt;hr&amp;gt;&lt;/code&gt; with any of the following:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;code&gt;___&lt;/code&gt;: three consecutive underscores&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;---&lt;/code&gt;: three consecutive dashes&lt;/li&gt;
+  &lt;li&gt;&lt;code&gt;***&lt;/code&gt;: three consecutive asterisks&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;renders to:&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;hr /&gt;
+
+&lt;hr /&gt;
+
+&lt;div class=&quot;divider&quot;&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;media&quot;&gt;Media&lt;/h2&gt;
+
+&lt;h3 id=&quot;youtube-embedded-iframe&quot;&gt;YouTube Embedded Iframe&lt;/h3&gt;
+
+&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https://www.youtube.com/embed/n1a7o44WxNo&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+
+&lt;h3 id=&quot;image&quot;&gt;Image&lt;/h3&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://octodex.github.com/images/minion.png&quot; alt=&quot;Minion&quot; /&gt;&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;Footnote number one yeah baby! Long sentence test of footnote to see how the words are wrapping between each other. Might overflowww! &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot;&gt;
+      &lt;p&gt;A footnote you can link to - &lt;a href=&quot;#&quot;&gt;click here!&lt;/a&gt; &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
 </description>
-        <pubDate>Sun, 11 Feb 2018 00:00:00 +0800</pubDate>
-        <link>http://localhost:4000/title</link>
-        <guid isPermaLink="true">http://localhost:4000/title</guid>
-        
-        
-        <category>blog</category>
-        
-      </item>
+          <pubDate>2016-10-18T00:00:00+08:00</pubDate>
+          <link>https://heiswayi.nrird.com/the-plain/notes/very-long-title-post</link>
+          <guid isPermaLink="true">https://heiswayi.nrird.com/the-plain/notes/very-long-title-post</guid>
+        </item>
+      
+    
+      
+        <item>
+          <title>Download this Theme</title>
+          <description>&lt;p&gt;The Plain is a minimalist Jekyll theme, designed to focus on writing that really matters to you and your audience. Everything else is just a distraction. Nothing more other than useful and understandable information sharing. I have made a final update to this theme. This theme is suit best for personal blog type, but not limited to.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Fork&lt;/em&gt;&lt;/strong&gt; or &lt;strong&gt;&lt;em&gt;download&lt;/em&gt;&lt;/strong&gt; the theme &lt;a href=&quot;https://github.com/heiswayi/the-plain&quot;&gt;here on GitHub&lt;/a&gt;.&lt;/p&gt;
+</description>
+          <pubDate>2015-09-09T00:00:00+08:00</pubDate>
+          <link>https://heiswayi.nrird.com/the-plain/notes/download-this-theme</link>
+          <guid isPermaLink="true">https://heiswayi.nrird.com/the-plain/notes/download-this-theme</guid>
+        </item>
+      
+    
+      
+        <item>
+          <title>Lorem Ipsum</title>
+          <description>&lt;h3 id=&quot;the-standard-lorem-ipsum-passage-used-since-the-1500s&quot;&gt;The standard Lorem Ipsum passage, used since the 1500s&lt;/h3&gt;
+
+&lt;p&gt;“Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.”&lt;/p&gt;
+
+&lt;h3 id=&quot;section-11032-of-de-finibus-bonorum-et-malorum-written-by-cicero-in-45-bc&quot;&gt;Section 1.10.32 of “de Finibus Bonorum et Malorum”, written by Cicero in 45 BC&lt;/h3&gt;
+
+&lt;p&gt;“Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur?”&lt;/p&gt;
+
+&lt;h3 id=&quot;translation-by-h-rackham&quot;&gt;1914 translation by H. Rackham&lt;/h3&gt;
+
+&lt;p&gt;“But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain was born and I will give you a complete account of the system, and expound the actual teachings of the great explorer of the truth, the master-builder of human happiness. No one rejects, dislikes, or avoids pleasure itself, because it is pleasure, but because those who do not know how to pursue pleasure rationally encounter consequences that are extremely painful. Nor again is there anyone who loves or pursues or desires to obtain pain of itself, because it is pain, but because occasionally circumstances occur in which toil and pain can procure him some great pleasure. To take a trivial example, which of us ever undertakes laborious physical exercise, except to obtain some advantage from it? But who has any right to find fault with a man who chooses to enjoy a pleasure that has no annoying consequences, or one who avoids a pain that produces no resultant pleasure?”&lt;/p&gt;
+
+&lt;h3 id=&quot;section-11033-of-de-finibus-bonorum-et-malorum-written-by-cicero-in-45-bc&quot;&gt;Section 1.10.33 of “de Finibus Bonorum et Malorum”, written by Cicero in 45 BC&lt;/h3&gt;
+
+&lt;p&gt;“At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.”&lt;/p&gt;
+
+&lt;h3 id=&quot;translation-by-h-rackham-1&quot;&gt;1914 translation by H. Rackham&lt;/h3&gt;
+
+&lt;p&gt;“On the other hand, we denounce with righteous indignation and dislike men who are so beguiled and demoralized by the charms of pleasure of the moment, so blinded by desire, that they cannot foresee the pain and trouble that are bound to ensue; and equal blame belongs to those who fail in their duty through weakness of will, which is the same as saying through shrinking from toil and pain. These cases are perfectly simple and easy to distinguish. In a free hour, when our power of choice is untrammelled and when nothing prevents our being able to do what we like best, every pleasure is to be welcomed and every pain avoided. But in certain circumstances and owing to the claims of duty or the obligations of business it will frequently occur that pleasures have to be repudiated and annoyances accepted. The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.”&lt;/p&gt;
+</description>
+          <pubDate>2015-09-06T00:00:00+08:00</pubDate>
+          <link>https://heiswayi.nrird.com/the-plain/notes/lorem-ipsum</link>
+          <guid isPermaLink="true">https://heiswayi.nrird.com/the-plain/notes/lorem-ipsum</guid>
+        </item>
+      
     
   </channel>
 </rss>

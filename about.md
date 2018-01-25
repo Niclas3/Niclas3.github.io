@@ -1,11 +1,10 @@
 ---
 layout: page
 title: About
-permalink: /about/
 ---
 
-This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at [jekyllrb.com](http://jekyllrb.com/)
+Hello.
 
-You can find the source code for the Jekyll new theme at: [github.com/jglovier/jekyll-new](https://github.com/jglovier/jekyll-new)
+This will be your About page. Anything about you, it should be written here in details. You may describe your bio here like who you are, what you do, your intention, social site hyperlinks and how people can contact you, etc.
 
-You can find the source code for Jekyll at [github.com/jekyll/jekyll](https://github.com/jekyll/jekyll)
+**Less is more..**
