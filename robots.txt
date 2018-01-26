@@ -6,3 +6,5 @@ sitemap: {{ site.baseurl | replace: 'https', 'http' | append: '/sitemap.xml' }}
 
 user-agent: EmailCollector
 disallow: /
+user-agent: *
+disallow: /
