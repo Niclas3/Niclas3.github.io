@@ -5,24 +5,18 @@ categories : homebrew
 ---
 
 Day 1
-  Recently, I can't stop playing a RPG named "shattered-pixel-dungeon". It is a
-rouge-like game, you are a hero (there are 4 occupations) for the secirts of 
-dungeon. This game has a ported version on [switch platform], but I want to create 
-a new switch version based on "shattered pixel dungeon" for adding more joycon 
-feature, that sounds great.
-  First, I don't have any Xp about making game, it is a challage. A good begun
-is half done, let's list some goals on version 0.1
-1. One hero 'Warrior'
-2. No audio
-3. One origial boss
-  As we know, SPD is a open source game, We can get [SPD's code] from github and 
-it also based of the source code of [Pixel Dungeon] by [Watabou], Those two games
-were writed by a library called [libgdx] in java, but i want to practice C
-programming skills so I want to use C rewriting a 'new' game in switch platform.
-Now I need choice a C-based lib which likes 'libgdx', thought long term
-searching I got nothing good on homebrew switch platform, btw, If you know
-better, let me know. so I choice a 2D vector drawing library on top of OpenGL
-for UI and visulizations named [nanovg].
+
+Recently, I've been unable to stop playing the RPG game "Shattered Pixel Dungeon" ([SPD]). It's a rogue-like game where you play as a hero (with four different occupations) exploring the secrets of a dungeon. The game has a port for the [switch platform], but I want to create a new version specifically for the switch that includes more Joycon features.
+
+I don't have any experience in game development, so this will be a challenge for me. But as the saying goes, a good beginning is half the battle, so I'll start by listing some goals for version 0.1:
+
+    A single hero class: Warrior
+    No audio
+    One original boss
+
+[SPD] is an open-source game and its code can be obtained from Github. It's based on the source code of [Pixel Dungeon] by [Watabou] and both games were written using the Java library [libgdx]. However, I want to practice my C programming skills, so I plan to rewrite the game using C and release it on the [switch platform].
+
+After a long search, I couldn't find a good C-based library for the homebrew [switch platform] that is similar to [libgdx]. If you have any suggestions, please let me know. I have chosen to use a 2D vector drawing library on top of OpenGL, named [nanovg], for the UI and visualizations.
 
 [switch platform]: https://github.com/00-Evan/shattered-pixel-dungeon
 [SPD's code]: https://github.com/00-Evan/shattered-pixel-dungeon
