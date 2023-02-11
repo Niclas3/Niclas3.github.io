@@ -1,6 +1,6 @@
 ---
 title: nXt-pixel-dungeon-day1
-updated: 2022-02-09
+updated: 2023-02-09
 categories : homebrew
 ---
 
