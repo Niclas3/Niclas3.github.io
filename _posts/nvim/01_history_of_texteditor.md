@@ -1,12 +1,12 @@
 ---
-title: what is nvim 
+title: history of text editor
 updated: 2024-11-20
 categories : nvim
 ---
 
 # 新造的轮子? neovim!
-这是一个谈论neovim的文章，我们在谈论它之前我想先梳理一下文本编辑器的历史。从1960年代
-到现在，整个编辑器大概可以划分为四个时代。
+这是一系列谈论neovim的文章的第一章，我们在谈论它之前我想先梳理一下文本编辑器的历史。
+从1960年代到现在，整个编辑器大概可以划分为四个时代。
 
 ## 起源时代 (1960s-1970s)
 文本编辑器的历史几乎和计算机历史重合，当早期的计算机科学女工们不在依赖打孔卡
@@ -116,21 +116,8 @@ moolenaar 就在已经有的软件Stevie的基础上准备复刻Vi, 所以最开
 ### VS Code 2015
 
 
-# "A nice looking website, that's one thing Neovim did right." -- Bram Moolenaar
-
-
 
 ## 参考资料
 [A History of UNIX before Berkeley: UNIX Evolution: 1975-1984](doc.cat-v.org/unix/unix-before-berkeley)
 [Understanding the Origins and the Evolution of Vi & Vim](https://pikuma.com/blog/origins-of-vim-text-editor)
 
-1. neovim是什么？为什么我会写这些东西？
-
-2. neovim的历史背景。when? why? what? how?
-3. neovim 主要特性
-4. 对treesitter支持和lsp的支持
-5. neovim的异步优势
-6. 插件生态
-
-
-next nvim里的基本概念
