@@ -192,6 +192,24 @@ br0		8000.56a61d0c2317	no		 enp0s31f6
     net.bridge.bridge-nf-call-iptables = 1
     ```
     `sudo sysctl -p`应用修改来永久修改这个配置项 
+    或者
+    
+    ```bash
+    [Unit]
+    Description=Setup qemu network bridging
+  After=network-online.target
+[Service]
+Type=oneshot
+Restart=on-failure
+ExecStart=brctl addbr virtbr0
+ExecStart=brctl addif virtbr0 enp3s0
+ExecStart=ip addr add 192.168.0.20/24 dev virtbr0
+ExecStart=ip link set virtbr0 up
+ExecStart=iptables -I FORWARD -m physdev --physdev-is-bridged -j ACCEPT
+[Install]
+WantedBy=multi-user.target
+    ```
+    
 2. 你可能需要给tap0和br0配置promisc启动混杂模式来监听流过他们的所有  
 
    ```bash
@@ -204,4 +222,8 @@ br0		8000.56a61d0c2317	no		 enp0s31f6
 #参考链接
 [1](https://wiki.qemu.org/Documentation/Networking) QEMU Networking 
 [2](https://lifeislife.cn/posts/qemu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE/) QEMU 虚拟机网络配置 
+[3](https://gist.github.com/extremecoders-re/e8fd8a67a515fee0c873dcafc81d811c) Setting up Qemu with a tap interface
+[4](https://www.spad.uk/posts/really-simple-network-bridging-with-qemu/)这里提到了iptables转发流量的设置
+[更多关于tap/tun](https://www.junmajinlong.com/virtual/network/all_about_tun_tap/) 
+
 
