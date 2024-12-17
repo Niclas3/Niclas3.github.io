@@ -84,6 +84,8 @@ sudo brctl addbr br0
 
 ```bash 
 sudo tunctl -t tap0 -u <user>
+# 设置tap0 UP
+sudo ip link set up dev tap0
 ```
 
 > 这里的<user>填写允许访问这个tap0接口的用户
@@ -92,6 +94,7 @@ sudo tunctl -t tap0 -u <user>
 这时候的网络接口情况
 
 ```bash
+$ sudo ip addr show
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
     link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
     inet 127.0.0.1/8 scope host lo
@@ -148,7 +151,7 @@ br0		8000.56a61d0c2317	no		 enp0s31f6
     link/ether 9c:2d:cd:68:ca:24 brd ff:ff:ff:ff:ff:ff
 11: br0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN group default qlen 1000
     link/ether 56:a6:1d:0c:23:17 brd ff:ff:ff:ff:ff:ff
-12: tap0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop master br0 state DOWN group default qlen 1000
+12: tap0: <BROADCAST,MULTICAST,UP> mtu 1500 qdisc noop master br0 state DOWN group default qlen 1000
     link/ether 26:a8:e6:ba:b0:cd brd ff:ff:ff:ff:ff:ff
 ```
 
