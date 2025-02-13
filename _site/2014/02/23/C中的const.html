@@ -19,11 +19,11 @@
 
 
 
-<link rel="icon" href="http://zhaosanmusi.net/assets/favicon.png">
-<link rel="apple-touch-icon" href="http://zhaosanmusi.net/assets/touch-icon.png">
-<link rel="stylesheet" href="http://zhaosanmusi.net/assets/core.css">
-<link rel="canonical" href="http://zhaosanmusi.net/2014/02/23/C%E4%B8%AD%E7%9A%84const.html">
-<link rel="alternate" type="application/atom+xml" title="朝四暮三" href="http://zhaosanmusi.net/feed.xml" />
+<link rel="icon" href="http://localhost:4000/assets/favicon.png">
+<link rel="apple-touch-icon" href="http://localhost:4000/assets/touch-icon.png">
+<link rel="stylesheet" href="http://localhost:4000/assets/core.css">
+<link rel="canonical" href="http://localhost:4000/2014/02/23/C%E4%B8%AD%E7%9A%84const.html">
+<link rel="alternate" type="application/atom+xml" title="朝四暮三" href="http://localhost:4000/feed.xml" />
 
 
 
@@ -32,12 +32,9 @@
 	</head>
 
 	<body>
-
+                <a href="/about">About</a>
 		<aside class="logo">
 
-	
-		
-		
 	
 
 	<a href="/">
@@ -58,13 +55,13 @@
 
 	<div class="divider"></div>
 
-	<p>===<br />
-前言<br />
+	<p>===
+前言
 —</p>
 
-<p>刚刚我在逛Coolshell的时候看到一个人在评论里面提了一个问题，我修改了一下代码代码如下所示。<br />
-开始<br />
-–<br />
+<p>刚刚我在逛Coolshell的时候看到一个人在评论里面提了一个问题，我修改了一下代码代码如下所示。
+开始
+–
     #include <stdio.h>
     int main(int argc, char **argv)
     {
@@ -74,23 +71,23 @@
 	  //int const *c = &a; /*P指向的数据是常量*/
       //int * const c = &a;   /*P本身是常量*/</stdio.h></p>
 
-  	  printf(“ a %p:%d  b %p:%d\n”, &amp;a, a, b, *b);<br />
-  	  *b = 5;<br />
-  	  printf(“ a %p:%d  b %p:%d\n”, &amp;a, a, b, *b);<br />
-  	  return 0;<br />
-<pre><code>}
-</code></pre>
+  	  printf(“ a %p:%d  b %p:%d\n”, &amp;a, a, b, *b);
+  	  *b = 5;
+  	  printf(“ a %p:%d  b %p:%d\n”, &amp;a, a, b, *b);
+  	  return 0;
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>}
+</code></pre></div></div>
 
 <p>好了，首先我们先看一下上面的代码，</p>
 
-<p>第一行定义了一个const修饰的int类型的变量a，然后定义一个指针b并赋值a，随后在打印a，b的地址和变量之后用指针b改变了<br />
+<p>第一行定义了一个const修饰的int类型的变量a，然后定义一个指针b并赋值a，随后在打印a，b的地址和变量之后用指针b改变了
 a的值，再继续打印b的值。</p>
 
 <p>然后我们使用gcc编译后加上-wall选项之后只有一句警告：initialization discards qualifiers from pointer target type.也就是被指针指过之后就会降低变量的资格（const的资格）具体是因为什么等我明天再网上查查就能知道。</p>
 
 <p>但是这里给出解决方案如果你想保护一个变量不被你的指针胡乱修改请再指针上修饰表示自己指向的值不能修改，而不是在值的地方修改。</p>
 
-<p>另外我实验了三种添加const的位置 首先const是一个左结合修饰符也就是标准写法应该像我注释的倒数两行一样书写。<br />
+<p>另外我实验了三种添加const的位置 首先const是一个左结合修饰符也就是标准写法应该像我注释的倒数两行一样书写。
 第一种是不同的具体因为什么原因等我去找一找。</p>
 
 <p><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/cn/"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/cn/80x15.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/cn/">知识共享署名-非商业性使用-禁止演绎 3.0 中国大陆许可协议</a>进行许可。</p>
@@ -105,13 +102,13 @@ a的值，再继续打印b的值。</p>
 
 <div class="page-navigation">
 	
-    <a class="next" href="http://zhaosanmusi.net/2014/02/23/Mac%E4%B8%8A%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEbochs.html" title="NEXT: Mac中安装配置bochs(with SDL)">&lt;&lt;</a>
+    <a class="next" href="http://localhost:4000/2014/02/23/Mac%E4%B8%8A%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEbochs.html" title="NEXT: Mac中安装配置bochs(with SDL)">&lt;&lt;</a>
 		<span> &middot; </span>
   
-		<a class="home" href="http://zhaosanmusi.net" title="Back to Homepage">Home</a>
+		<a class="home" href="http://localhost:4000" title="Back to Homepage">Home</a>
   
 		<span> &middot; </span>
-    <a class="prev" href="http://zhaosanmusi.net/essay/2014/01/01/Lose%20one%E2%80%98s%20force.html" title="PREV: Lose one‘s force">&gt;&gt;</a>
+    <a class="prev" href="http://localhost:4000/essay/2014/01/01/Lose-one-s-force.html" title="PREV: Lose one‘s force">&gt;&gt;</a>
   
 </div>
 
@@ -119,7 +116,7 @@ a的值，再继续打印b的值。</p>
 
 		<div class="footer">
   <span class="block">😝 <a href="/" title="">曰 朝三而暮四 众狙皆怒 然则朝四而暮三 众狙皆悦</a> by <a href="http://niclas3.github.io">M</a>.</span>
-  <span class="block">&copy; 2018 M</span>
+  <span class="block">&copy; 2025 zhou</span>
 </div>
 
 

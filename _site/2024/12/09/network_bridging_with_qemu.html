@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+	<title>qemu上网指南 · 朝四暮三</title>
+
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="qemu上网指南" />
+<meta name="twitter:description" content="如何使用bridge连接qemu虚拟机和宿主机">
+
+<meta name="description" content="如何使用bridge连接qemu虚拟机和宿主机">
+
+
+
+<link rel="icon" href="http://localhost:4000/assets/favicon.png">
+<link rel="apple-touch-icon" href="http://localhost:4000/assets/touch-icon.png">
+<link rel="stylesheet" href="http://localhost:4000/assets/core.css">
+<link rel="canonical" href="http://localhost:4000/2024/12/09/network_bridging_with_qemu.html">
+<link rel="alternate" type="application/atom+xml" title="朝四暮三" href="http://localhost:4000/feed.xml" />
+
+
+
+
+
+	</head>
+
+	<body>
+                <a href="/about">About</a>
+		<aside class="logo">
+
+	
+
+	<a href="/">
+            <img src="/assets/headImg.png" class="gravatar">
+	</a>
+	<span class="logo-prompt">Back to Home</span>
+
+</aside>
+
+
+		<main>
+			<article>
+
+	<div class="center">
+		<h1>qemu上网指南</h1>
+		<time>December 9, 2024</time>
+	</div>
+
+	<div class="divider"></div>
+
+	<h1 id="如何使用bridge连接qemu虚拟机和宿主机">如何使用bridge连接qemu虚拟机和宿主机</h1>
+
+<h2 id="requirements">Requirements</h2>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#本机环境
+uname -a
+Linux k 6.2.0-37-generic #38.22.04.1-Ubuntu SMP PREEMPT_DYNAMIC Thu Nov 2 18:01:13 UTC 2 x86_64 x86_64 x86_64 GNU/Linux
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> # 安装虚拟网桥工具 brctl
+sudo apt install bridge-utils -y
+ # 安装(user-mode linux)工具 tunctl
+sudo apt install uml-utilities -y
+</code></pre></div></div>
+
+<h2 id="配置网桥--qemu设置">配置网桥 &amp; qemu设置</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># &lt;user&gt; 当前user名字</span>
+<span class="c"># &lt;enp0&gt; 需联网的网卡</span>
+<span class="c"># &lt;bridge ip&gt; 设置符合你当前网络网段的IP地址(可以和enp0网卡一样)</span>
+
+<span class="nb">sudo </span>brctl addbr br0
+<span class="nb">sudo </span>tunctl <span class="nt">-t</span> tap0 <span class="nt">-u</span> &lt;user&gt; 
+<span class="nb">sudo </span>brctl addif br0 tap0 &lt;enp0&gt; 
+<span class="nb">sudo </span>ip addr add &lt;bridge ip&gt; dev br0 
+<span class="nb">sudo </span>ip <span class="nb">link set</span> &lt;enp0&gt; up
+<span class="nb">sudo </span>ip <span class="nb">link set </span>tap0 up
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># 设置qemu的网络前端设备和后端设备
+qemu-system-i386 \ 
+-netdev tap,id=net0,ifname=tap0,script=no,downscript=no \
+-device e1000,netdev=net0 \
+...
+</code></pre></div></div>
+<h1 id="get-your-hands-dirty">Get your hands dirty</h1>
+
+<h2 id="如何让qemu虚拟机可以连接网络">如何让qemu虚拟机可以连接网络？</h2>
+<p>虚拟机连接网络需要两种必要条件，一个是硬件，一个是软件。硬件是网卡，软件就是一整套协议栈和网卡驱动。当虚拟机已经具有最基本条件之后，就需要<strong>外围网络设备</strong>保障网络连接，qemu提供了5种上网策略</p>
+
+<ol>
+  <li>User Networking (NAT)</li>
+  <li><strong>Tap Networking</strong> (Bridge Networking)</li>
+  <li>Socket Networking</li>
+  <li>Macvtap Networking</li>
+  <li>Host Networking</li>
+</ol>
+
+<p>我选用了第二种策略。
+<strong>Tap Networking</strong> (Bridge Networking) 这种联网方式是通过<code class="language-plaintext highlighter-rouge">tap</code>设备将虚拟机和宿主机的<strong>网桥</strong>上，虚拟机和宿主机通过网桥连接。这样宿主机可以通过网桥<strong>转发</strong>虚拟机流量从而共享宿主机的网卡。这一套外围设备是宿主机提供的，让我们一步一步设置。</p>
+
+<h2 id="外围设备">外围设备</h2>
+<p>先看一下初始网络接口信息</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ip addr show 
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    <span class="nb">link</span>/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: enp0s31f6: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    <span class="nb">link</span>/ether xx:xx:xx:68:ca:24 brd ff:ff:ff:ff:ff:ff
+
+</code></pre></div></div>
+<blockquote>
+  <p>实体网卡<strong>enps31f6</strong>就是可以链接网络的网卡。</p>
+</blockquote>
+
+<hr />
+
+<p>新建一个网桥<strong>br0</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>brctl addbr br0
+</code></pre></div></div>
+<hr />
+
+<p>新建一个叫做<strong>tap0</strong>的tap接口</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>tunctl <span class="nt">-t</span> tap0 <span class="nt">-u</span> &lt;user&gt;
+<span class="c"># 设置tap0 UP</span>
+<span class="nb">sudo </span>ip <span class="nb">link set </span>up dev tap0
+</code></pre></div></div>
+
+<blockquote>
+  <p>这里的<user>填写允许访问这个tap0接口的用户</user></p>
+</blockquote>
+
+<hr />
+<p>这时候的网络接口情况</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sudo </span>ip addr show
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    <span class="nb">link</span>/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: enp0s31f6: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    <span class="nb">link</span>/ether 9c:2d:cd:68:ca:24 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.1.14/24 brd 192.168.1.255 scope global dynamic enp0s31f6
+       valid_lft 604042sec preferred_lft 604042sec
+11: br0: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN group default qlen 1000
+    <span class="nb">link</span>/ether 56:a6:1d:0c:23:17 brd ff:ff:ff:ff:ff:ff
+12: tap0: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN group default qlen 1000
+    <span class="nb">link</span>/ether 26:a8:e6:ba:b0:cd brd ff:ff:ff:ff:ff:ff
+</code></pre></div></div>
+<hr />
+<p>把网卡和tap0接口都添加到网桥上</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>brctl show
+bridge name	bridge <span class="nb">id		</span>STP enabled	interfaces
+br0		8000.56a61d0c2317	no
+</code></pre></div></div>
+
+<blockquote>
+  <p>网桥<strong>br0</strong>被添加接口前</p>
+</blockquote>
+
+<hr />
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>brctl addif br0 tap0 enp0s31f6
+</code></pre></div></div>
+<hr />
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>brctl show
+bridge name	bridge <span class="nb">id		</span>STP enabled	interfaces
+br0		8000.56a61d0c2317	no		 enp0s31f6
+							         tap0
+</code></pre></div></div>
+<blockquote>
+  <p>网桥<strong>br0</strong>被添加接口后</p>
+</blockquote>
+
+<p>本来联网的网卡<strong>enp0s31f6</strong>就不会在处理数据包了他的ip地址也会不见，现在的网络接口信息如下</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    <span class="nb">link</span>/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: enp0s31f6: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel master br0 state UP group default qlen 1000
+    <span class="nb">link</span>/ether 9c:2d:cd:68:ca:24 brd ff:ff:ff:ff:ff:ff
+11: br0: &lt;BROADCAST,MULTICAST&gt; mtu 1500 qdisc noop state DOWN group default qlen 1000
+    <span class="nb">link</span>/ether 56:a6:1d:0c:23:17 brd ff:ff:ff:ff:ff:ff
+12: tap0: &lt;BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noop master br0 state DOWN group default qlen 1000
+    <span class="nb">link</span>/ether 26:a8:e6:ba:b0:cd brd ff:ff:ff:ff:ff:ff
+</code></pre></div></div>
+
+<p>这时候需要给网桥分配一个适合你网段的ip地址，或者使用<code class="language-plaintext highlighter-rouge">sudo dhclient br0</code>给<strong>br0</strong>提供一个ip地址。
+到这里宿主机的外围设备配置就结束了。
+##qemu配置</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	qemu-system-i386 <span class="se">\</span>
+	<span class="nt">-S</span> <span class="se">\</span>
+	<span class="nt">-s</span> <span class="se">\</span>
+	<span class="nt">-monitor</span> stdio <span class="se">\</span>
+	<span class="nt">-m</span> 1G <span class="se">\</span>
+	<span class="nt">-hda</span> ubuntu-disk.img <span class="se">\</span>
+	<span class="nt">-rtc</span> <span class="nv">base</span><span class="o">=</span>localtime,clock<span class="o">=</span>host <span class="se">\</span>
+	<span class="nt">-netdev</span> tap,id<span class="o">=</span>net0,ifname<span class="o">=</span>tap0,script<span class="o">=</span>no,downscript<span class="o">=</span>no <span class="se">\</span>
+	<span class="nt">-device</span> e1000,netdev<span class="o">=</span>net0 <span class="se">\</span>
+	<span class="nt">-audiodev</span> <span class="nb">id</span><span class="o">=</span>alsa,driver<span class="o">=</span>alsa <span class="se">\</span>
+	<span class="nt">-machine</span> pcspk-audiodev<span class="o">=</span>alsa <span class="se">\</span>
+	<span class="nt">-cdrom</span> ./ubuntu-14.04.6-server-i386.iso
+</code></pre></div></div>
+<p>关键的就是对网络设备的配置，
+<code class="language-plaintext highlighter-rouge">-netdev tap,id=net0,ifname=tap0,script=no,downscript=no
+ -device e1000,netdev=net0</code>
+<code class="language-plaintext highlighter-rouge">-netdev</code>用于指定网络后端实现，这里是用<strong>tap</strong>接口实现，<strong>ifname</strong>这个选项对应的接口
+就是刚刚宿主机新建的tap接口<strong>tap0</strong>
+<code class="language-plaintext highlighter-rouge">-device</code>则是配置网卡
+和使用指定的netdev实现。</p>
+
+<p>#Troublesh0oting</p>
+
+<ol>
+  <li>
+    <p>网桥配置完全之后只有二层协议可以通过但是三层协议被丢包，怎么解决？ 
+有可能是你的宿主机的<code class="language-plaintext highlighter-rouge">iptables</code>拦截了流量，查看iptable的规则，或者直接关闭
+ 网桥转发数据的包经过iptables处理。查看这两个文件是不是<code class="language-plaintext highlighter-rouge">1</code>设成<code class="language-plaintext highlighter-rouge">0</code>关闭。
+ <code class="language-plaintext highlighter-rouge">cat /proc/sys/net/bridge/bridge-nf-call-iptables
+    cat /proc/sys/net/bridge/bridge-nf-call-ip6tables</code>
+ 你也可以编辑 <code class="language-plaintext highlighter-rouge">/etc/sysctl.conf</code> 添加</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> net.bridge.bridge-nf-call-iptables <span class="o">=</span> 1
+</code></pre></div>    </div>
+    <p><code class="language-plaintext highlighter-rouge">sudo sysctl -p</code>应用修改来永久修改这个配置项 
+ 或者</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="o">[</span>Unit]
+ <span class="nv">Description</span><span class="o">=</span>Setup qemu network bridging
+  <span class="nv">After</span><span class="o">=</span>network-online.target
+<span class="o">[</span>Service]
+<span class="nv">Type</span><span class="o">=</span>oneshot
+<span class="nv">Restart</span><span class="o">=</span>on-failure
+<span class="nv">ExecStart</span><span class="o">=</span>brctl addbr virtbr0
+<span class="nv">ExecStart</span><span class="o">=</span>brctl addif virtbr0 enp3s0
+<span class="nv">ExecStart</span><span class="o">=</span>ip addr add 192.168.0.20/24 dev virtbr0
+<span class="nv">ExecStart</span><span class="o">=</span>ip <span class="nb">link set </span>virtbr0 up
+<span class="nv">ExecStart</span><span class="o">=</span>iptables <span class="nt">-I</span> FORWARD <span class="nt">-m</span> physdev <span class="nt">--physdev-is-bridged</span> <span class="nt">-j</span> ACCEPT
+<span class="o">[</span>Install]
+<span class="nv">WantedBy</span><span class="o">=</span>multi-user.target
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>你可能需要给tap0和br0配置promisc启动混杂模式来监听流过他们的所有</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   <span class="nb">sudo </span>ip <span class="nb">link set </span>promisc on dev tap0
+   <span class="nb">sudo </span>ip <span class="nb">link set </span>promisc on dev br
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="参考链接">参考链接</h2>
+<p><a href="https://wiki.qemu.org/Documentation/Networking">1</a> QEMU Networking</p>
+
+<p><a href="https://lifeislife.cn/posts/qemu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE/">2</a> QEMU 虚拟机网络配置</p>
+
+<p><a href="https://gist.github.com/extremecoders-re/e8fd8a67a515fee0c873dcafc81d811c">3</a> Setting up Qemu with a tap interface</p>
+
+<p><a href="https://www.spad.uk/posts/really-simple-network-bridging-with-qemu/">4 </a>这里提到了iptables转发流量的设置</p>
+
+<p><a href="https://www.junmajinlong.com/virtual/network/all_about_tun_tap/">更多关于tap/tun</a></p>
+
+<hr />
+
+<h3 id="后">后</h3>
+<p>虽然设置好虚拟机的网卡但一直没有几乎添加协议栈内容;*(，希望有几乎实现协议栈。</p>
+
+<p>Thu Feb 13 05:37:47 PM CST 2025</p>
+
+
+</article>
+
+<div class="page-navigation">
+	
+    <a class="next" href="http://localhost:4000/frog/2024/12/11/on_interrupt.html" title="NEXT: 聊聊中断">&lt;&lt;</a>
+		<span> &middot; </span>
+  
+		<a class="home" href="http://localhost:4000" title="Back to Homepage">Home</a>
+  
+		<span> &middot; </span>
+    <a class="prev" href="http://localhost:4000/nvim/2024/11/20/history_of_text_editor.html" title="PREV: 新造的轮子">&gt;&gt;</a>
+  
+</div>
+
+		</main>
+
+		<div class="footer">
+  <span class="block">😝 <a href="/" title="">曰 朝三而暮四 众狙皆怒 然则朝四而暮三 众狙皆悦</a> by <a href="http://niclas3.github.io">M</a>.</span>
+  <span class="block">&copy; 2025 zhou</span>
+</div>
+
+
+	</body>
+
+</html>
