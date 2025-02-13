@@ -33,4 +33,7 @@ jobs:
         with:
           branch: gh-pages
           folder: _site
+          clean: true
+          commit-message: "Deploy site by github actions"
+          force: true
 
