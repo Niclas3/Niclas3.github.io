@@ -11,7 +11,7 @@ everything具体指的是什么东西？第二，file指的是什么?
     某种操作方式来处理这种结构。方式比如说，open/close/write/read/seek
     这一系列的操作。
 
-## inode X vnode X file
+## inode X vnode X files 
 inode: 提供一种文件和硬盘数据块的中间层抽象
 vnode: 提供一种文件系统的节点
 file : 提供一个运行时的文件抽象，为了和进程交互.
