@@ -1,22 +1,26 @@
 # Site Info
 title:              "朝四暮三"
-description:        "喜欢三是两听的金鱼杯"
+description:        ""
 # google_verify:      # Put your Google Verification here
 # google_analytics:   # Put your Google Analytics code
 
 # Author Info
-author_name:        "M" # Your name here
-author_email:       urchin@zhaosanmusi.com # Your email here
+author_name:        "niclas" # Your name here
 # author_gravatar:         # Your Gravatar md5 hash here for logo
 # twitter_username:        # Your Twitter username here
 # github_username:         # Your GitHub username here
 
 # Site Settings
 url:                https://niclas3.github.io #http://zhaosanmusi.net # main url
-baseurl:            / # for gh-pages
+baseurl:             # for gh-pages it is empty
 #permalink:          /:categories/:title # Post permalink
 timezone:           Asia/Shanghai # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 # mathjax:            true  # enables support for mathjax - set to false to disable
+
+# Theme
+# remote_theme: pages-themes/primer@v0.2.0
+# plugins:
+#   - jekyll-remote-theme
 
 # Site Build
 highlighter:        rouge
