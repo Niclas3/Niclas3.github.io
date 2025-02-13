@@ -1,6 +1,6 @@
 ---
 title: why you should know neovim
-updated: 2024-11-20
+updated: Wed Nov 20 05:25:11 PM CST 2024
 categories : nvim
 ---
 # 前记

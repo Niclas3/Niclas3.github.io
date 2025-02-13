@@ -1,9 +1,8 @@
 ---
-title: 使用bridge连接qemu虚拟机和宿主机
+title: qemu上网指南
 updated: 2024-12-09
 ---
-#使用bridge-tap连接qemu虚拟机和宿主机
-## TL;NR
+# 如何使用bridge连接qemu虚拟机和宿主机
 
 ## Requirements
 ``` 
@@ -222,11 +221,20 @@ WantedBy=multi-user.target
     
 
 
-#参考链接
+## 参考链接
 [1](https://wiki.qemu.org/Documentation/Networking) QEMU Networking 
+
 [2](https://lifeislife.cn/posts/qemu%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E9%85%8D%E7%BD%AE/) QEMU 虚拟机网络配置 
+
 [3](https://gist.github.com/extremecoders-re/e8fd8a67a515fee0c873dcafc81d811c) Setting up Qemu with a tap interface
-[4](https://www.spad.uk/posts/really-simple-network-bridging-with-qemu/)这里提到了iptables转发流量的设置
+
+[4 ](https://www.spad.uk/posts/really-simple-network-bridging-with-qemu/)这里提到了iptables转发流量的设置
+
 [更多关于tap/tun](https://www.junmajinlong.com/virtual/network/all_about_tun_tap/) 
 
+---
 
+### 后
+虽然设置好虚拟机的网卡但一直没有几乎添加协议栈内容;*(，希望有几乎实现协议栈。
+
+Thu Feb 13 05:37:47 PM CST 2025
