@@ -1,6 +1,7 @@
 ---
 title: qemu上网指南
 updated: 2024-12-09
+categories : [program, network]
 ---
 # 如何使用bridge连接qemu虚拟机和宿主机
 

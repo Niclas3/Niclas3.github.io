@@ -13,7 +13,7 @@ author_name:        "niclas" # Your name here
 # Site Settings
 url:                https://niclas3.github.io #http://zhaosanmusi.net # main url
 baseurl:             # for gh-pages it is empty
-#permalink:          /:categories/:title # Post permalink
+permalink:          /:categories/:title # Post permalink
 timezone:           Asia/Shanghai # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 # mathjax:            true  # enables support for mathjax - set to false to disable
 

@@ -1,7 +1,7 @@
 ---
 title: 新造的轮子
 updated: Wed Nov 20 17:25:11 CST 2024
-categories : nvim
+categories : [program, nvim]
 ---
 
 # 新造的轮子? neovim!

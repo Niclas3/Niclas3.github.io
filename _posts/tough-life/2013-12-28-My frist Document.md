@@ -1,7 +1,7 @@
 ---
 title:  My frist Document nightly
 updated: 2013-12-28
-categories : essay
+categories : [share, essay]
 ---
 这是我第一次在这个软件里面写字，我也是第一次能如此震撼的写下文字，
 这里的一切都显得这么和谐音乐，简约的风格，流畅的输入的感觉一切的一切都

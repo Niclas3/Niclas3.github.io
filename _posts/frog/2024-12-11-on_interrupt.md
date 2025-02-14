@@ -1,7 +1,7 @@
 ---
 title: 聊聊中断
 updated: Wed Dec 11 12:15:59 CST 2024
-categories : frog
+categories : [program, os]
 ---
 
 ## 起因
