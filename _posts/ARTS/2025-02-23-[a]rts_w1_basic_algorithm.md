@@ -8,17 +8,15 @@ tags: [ARTS]
 
 ## 计算机算法 VS 数学算法
 
-首先我们需要分清楚什么是计算机算法什么是数学算法。简单来说数学算法是把数论的证明或者推论使用
-程序的方式展现，比如说RAS加密算法。而计算机算法更像是一种“枚举”，比如说算出第k个素数是什么？
+首先我们需要分清楚什么是**计算机算法**什么是**数学算法**。简单来说数学算法是把数论的证明或者推论使用程序的方式展现，比如说RAS加密算法。而计算机算法更像是一种“枚举”，比如说算出第k个素数是什么？
 
-这两者有微妙的不同数学算法偏向于找到一个通用的解，计算机算法偏向于解决一个问题，是否通用或者
-形式上合理不太重要。
+这两者有微妙的不同再于，数学算法偏向于找到一个通用的解，计算机算法偏向于解决一个问题，是否通用或者形式上合理不太重要。
 
 如果你和我一样数学不好，只是希望使用算法找个工作。我们就一起看看计算机算法是如何“枚举”的。
 
 ## 枚举
 
-枚举也可以叫穷举，就是一个一个数的意思。这件事看上去很简单，但其实要做到完美需要恰好数完所有情况
+枚举也可以叫穷举，就是一个一个数的意思。这件事看上去很简单，但其实要做到完美需要**恰好**数完所有情况
 不能多不能少。“恰好”并不容易，我们可以从怎么枚举开始，到如何优化枚举。
 
 大多数算法会围绕着这两件事情进行，有些问题容易写出枚举但是会超出时间或者空间，有些问题很难写出枚举手段找到枚举手段就是关键。
@@ -26,13 +24,13 @@ tags: [ARTS]
 ## 找到枚举
 先说一下“递归问题”代表什么？
 
-递归问题是一种存在重复且可以分解的子问题的一种问题，简单来说就是如果这个问题的解是一个函数那么这个函数
+递归问题是一种存在重复且可以分解的子问题的一种问题，简单来说假设这个问题的解是一个函数那么这个函数
 可以应用在这个问题的各个子问题上。
 
 递归类问题可以来演示什么是“找到枚举”。
 
 ## 动态规划（Dynamic Programming）
-一种典型的递归类问题。大部分使用动态规划的问题是求极值或者是计数。
+一种典型的递归类问题。大部分使用动态规划的问题是求极值或者是计数。<br/>
 如果一个问题的最优解可以由它的子问题的最优解构成。那么这个问题就具有“最优子结构”，这种性质是动态规划可以
 通过递归来拆分问题的关键。
 
@@ -46,8 +44,8 @@ tags: [ARTS]
 4. 边界条件
 
 ## 斐波那契数列
-我们来使用斐波那契数列来感受动态规划。
-首先，斐波那契数列的递推公式是： F(n) = F(n-1) + F(n-2), F(0) = 0, F(1) = 1.
+我们来使用斐波那契数列来感受动态规划。<br/>
+首先，斐波那契数列的递推公式是：$ F(n) = F(n-1) + F(n-2), F(0) = 0, F(1) = 1.$
 
 来分析一下斐波那契数列
 1. 存在最优子结构。每一项都是前两项的和
@@ -69,17 +67,17 @@ graph TD
 </pre>
 算一下时间复杂度，也就是$\mathcal{O}()$,时间复杂度是单个子问题的处理时间乘以子问题个数。
 
-* 算第3项子问题有两个需要计算f1和f2.
-* 算第4项子问题有四个需要计算f3-f2和f2-f1
-* 算第5项子问题有六个需要计算f4-f3和f3-f2和f2-f1
-* 算第6项子问题有八个需要计算f5-f4和f4-f3和f3-f2和f2-f1
+* 算第3项子问题有两个需要计算$f(1)$和$f(2)$.
+* 算第4项子问题有四个需要计算$f(3)-f(2)$和$f(2)-f(1)$
+* 算第5项子问题有六个需要计算$f(4)-f(3)$和$f(3)-f(2)$和$f(2)-f(1)$
+* 算第6项子问题有八个需要计算$f(5)-f(4)$和$f(4)-f(3)$和$f(3)-f(2)$和$f(2)-f(1)$
 * 算第n项子问题有$\mathcal{O}(2^n)$ 
 
-因为每个子问题都是加法所以单个子问题处理时间是$\mathcal{O}(1)$.
+因为每个子问题都是两项的加法所以单个子问题处理时间是$\mathcal{O}(1)$.
 
 $\mathcal{O}(2^n) \times \mathcal{O}(1) = \mathcal{O}(2^n)$ 
 
-计算某一个项的时间复杂度是指数级别，效率很差。原因是重复计算，类似图中其中第7和第8项都重复计算了
+计算某一个项的时间复杂度是**指数级别**，效率很差。原因是重复计算，类似图中其中**第7**和**第8**项都重复计算了
 我也标记了相同的颜色。
 
 如下是2的指数级别的算法
@@ -106,11 +104,11 @@ xychart-beta
 
 ## 自顶向下 - 备忘录
 
-随之而来的就是引入备忘录（Memoization）来解决DP的特征之一**重叠子问题**。这也是**以时间换空间**的体现。
+随之而来的就是引入**备忘录（Memoization）**来解决DP的特征之一**重叠子问题**。这也是**以时间换空间**的体现。
 
 备忘录的引入逻辑很简单类似考试的小抄一样，它可以让你不必再计算一遍同样的答案只需要查找对应的题号就会得到对应的答案。
-使用这种逻辑加速运算在历史上也比比皆是，1614年John Napier发明对数表；intel在CPU中使用TLB加速虚拟地址转换等等。
-```
+使用这种逻辑加速运算在历史上也比比皆是，1614年John Napier发明[对数表](https://blog.csdn.net/ComputerInBook/article/details/129696172)；intel在CPU中使用[TLB](https://en.wikipedia.org/wiki/Translation_lookaside_buffer)加速虚拟地址转换等等。
+```c
 int fib_memo(int n, long *memo)
 {
         if (n == 2 || n == 1) {
@@ -133,7 +131,7 @@ xychart-beta
     y-axis "time cost (in ms)" 0.001 --> 0.049
     line [0.049,0.003,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.000,0.001,0.001,0.001,0.001,0.001,0.001]
 </pre>
-
+你可能好奇为什么第一个数花这么久时间，这可能需要谈到计算机内存的知识，之后如果我有写文章会连接起来的。
 
 
 这样一来使用了Memo的计算变少了
@@ -177,7 +175,7 @@ xychart-beta
     line [0.040,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.000,0.001,0.001,0.001,0.000,0.001,0.001,0.001,0.001,0.001,0.001]
 </pre>
 
-这里会引入一个概念**状态转移方程**。这个词语相信有些人在FSM有限状态机里也听过，这两者虽然都描述着
+这里会引入一个概念**状态转移方程**。这个词语相信有些人在**FSM有限状态机**里也听过，这两者虽然都描述着
 从一个状态到另一个状态的转移，但DP是通过递归关系从子问题和之前状态推算出现在子问题的解。而FSM是通过
 外部输入或者上一个状态，转移到另一个状态以用来做过程控制。
 
@@ -236,8 +234,9 @@ You may assume that you have an infinite number of each kind of coin.
 * 其次是子结构，也就是这个结构是蕴含在每一次状态转换中的。
 
 上文说到FP是没有最优子结构的，但是FP的确存在子结构，也就是 
-```Fn=Fn-1 + Fn-2；n > 2
-```
+
+$ Fn=Fn-1 + Fn-2；n > 2 $
+
 这个也是上文里提到的状态转移方程。大概可以如此断言，**所有的DP问题是可以用状态转移方程来描述其子结构**。
 
 我这里有一个没有证实的猜想:
@@ -252,24 +251,64 @@ You may assume that you have an infinite number of each kind of coin.
 我们试着看看能不能把这个问题的**规模缩小**试着看看能不能找到基本情况。
 
 假设总数是18元，可用的零钱集合是｛2，3，5｝<br/> 
-使用分解18元的策略（自顶向下）
+使用分解18元的策略（自顶向下）{这是贪心逻辑}
 1. 18元 ｛｝
 2. 13元 ｛5｝
 3. 08元  ｛5，5｝
 4. 03元  ｛5，5，5｝
 5. 00元  ｛5，5，5，3｝
 
-每一次从硬币堆中挑选一枚硬币，就会获得新的状态。
+---
+
+每一次从硬币堆中挑选一枚硬币，就会获得新的状态。{这是动态规划逻辑}
 
 例如：
-18元的最优情况就相当于，
-13元的最优情况的集合交集合｛5｝
+* 18元的最优数量就相当于
+* 18-2=16
+* 18-3=15
+* 18-5=13
+* 这三种情况中最优数量+1
 
-这样我们就发现了一个子结构,或者说状态转移方程。
+这样就会构成一个n叉树,n是零钱种类的数量。
+
+<pre class="mermaid" style="text-align: center;">
+graph TD
+    A["18"] --> B["16"]
+    A --> C["15"]
+    A --> D["13"]
+    B --> E["14"]
+    B --> F["13"]
+    B --> G["11"]
+    C --> H["..."]
+    D --> I["11"]
+    D --> J["10"]
+    D --> K["8"]
+
+    class F,D blueNode;
+    class G,I greenNode
+    classDef blueNode fill:#aaaaff,stroke:#0000ff,stroke-width:2px;
+    classDef greenNode fill:#aaccff,stroke:#00ffff,stroke-width:2px;
+</pre>
+
+
+<div style="background-color:#d0e7f9; color:#4d4d4d; padding:10px; border-radius:5px;">
+这里使用贪心算法的逻辑来看，子问题不独立 
+<br/>
 F(n) = F(n-1) $\cap$｛当前最优的一枚硬币类型｝；n >= 1
+</div>
+<div style="padding:10px;"></div>
 
-有了例子的感受，我们再来讨论最优子问题。怎么发现子问题是解决DP问题的关键，子问题有一个很关键
-的性质，是**子问题之间是相互独立的**。
+<div style="background-color:#d0e7f9; color:#4d4d4d; padding:10px; border-radius:5px;">
+但是使用动态规划的逻辑来看，子问题互相独立
+<br/>
+F(n) = min(F(n-k\[...\]) ) + 1;
+k就是零钱的种类数量
+</div>
+
+需要感受一下这里的区别。
+
+有了例子的感受，我们再来讨论最优子问题。怎么发现子问题是解决DP问题的关键，DP子问题有一个很关键
+的性质，是DP**子问题之间是相互独立的**。
 
 ## 子问题独立性
 我们以FB的计算为例子，你可能会想FB的每一项都是前两项的和（除了第一第二项），这样说明他们每一项
@@ -284,8 +323,110 @@ F(n) = F(n-1) $\cap$｛当前最优的一枚硬币类型｝；n >= 1
 比如N皇后问题。虽然我依然可以把问题划分为“每行放一个皇后”这个子问题，但是由于皇后的规则导致之前的皇后位置是
 会影响现在子问题的选择的，这就是子问题之间互相影响的例子。
 
-【给出一个change coin的C代码无memo】
-【给出一个change coin的C代码有memo】
-【自下而上的代码】无memo
+## Code
+以下是使用memo的DP和没有使用memo的DP
 
+```c
+// has memo
+#include <stdlib.h>
+#define MIN(a, b)                                                              \
+  ({                                                                           \
+    __typeof__(a) _a = (a);                                                    \
+    __typeof__(b) _b = (b);                                                    \
+    _a < _b ? _a : _b;                                                         \
+  })
+int coin_change_memo(int *coins,int coinsSize, int amount, int *memo)
+{
+        if (amount == 0)
+                return 0;
+        if (amount < 0)
+                return -1;
+        int res = INT_MAX;
+        int sub_problem = 0;
+        for (int i = 0; i < coinsSize; i++) {
+                int pos = amount - coins[i];
+                if (pos < 0) {
+                        continue;
+                } else {
+                        if (memo[amount - coins[i]]) {
+                                sub_problem = memo[amount - coins[i]];
+                        } else {
+                                sub_problem = coin_change_memo(
+                                    coins,coinsSize, amount - coins[i], memo);
+                                memo[amount - coins[i]] = sub_problem;
+                        }
+                        if (sub_problem == -1)
+                                continue;
+                }
+                res = MIN(res, 1 + sub_problem);
+        }
+        return res == INT_MAX ? -1 : res;
+}
+int coinChange(int* coins, int coinsSize, int amount) {
+        int *memo = calloc(amount, sizeof(int));
+        int res = coin_change_memo(coins, coinsSize, amount, memo);
+        return res;
+}
+```
+
+```c
+//coin的C代码无memo
+int coin_change(struct coins coins, int amount)
+{
+        if (amount == 0)
+                return 0;
+        if (amount < 0)
+                return -1;
+        int res = INT_MAX;
+
+        for (int i = 0; i < coins.size; i++) {
+                int sub_problem = coin_change(coins, amount - coins.sets[i]);
+                if (sub_problem == -1)
+                        continue;
+                res = MIN(res, 1 + sub_problem);
+        }
+        return res == INT_MAX ? -1 : res;
+}
+```
+
+
+```c
+int coin_change_memo_bottomup(int *coins,int coinsSize, int amount, int *memo)
+{
+        if (amount == 0)
+                return 0;
+        if (amount < 0)
+                return -1;
+
+        int res = INT_MAX;
+        int out;
+        for (int sub_amount = 1; sub_amount <= amount; sub_amount++) {
+                for (int j = 0; j < coinsSize; j++) {
+                        int index = sub_amount - coins[j];
+                        if (index < 0)
+                                continue;
+                        int sub_problem = memo[index];
+                        if(sub_problem==-1) continue;
+                        res = MIN(res, 1 + sub_problem);
+                }
+                res = (res == INT_MAX ? -1 : res);
+                memo[sub_amount] = res;
+                res = INT_MAX;
+        }
+        out = memo[amount];
+        return out;
+}
+
+
+int coinChange(int* coins, int coinsSize, int amount) {
+        int *memo = calloc(amount+1, sizeof(int));
+        //int res = coin_change_memo(coins, coinsSize, amount, memo);
+        int res = coin_change_memo_bottomup(coins, coinsSize, amount, memo);
+
+        return res;
+}
+
+```
+## 后
+DP的大部分概念已经在本文给出了，这个算是比较容易接受的递归逻辑。本文有一些衍生型问题，之后会专门写文详细说明。
 
