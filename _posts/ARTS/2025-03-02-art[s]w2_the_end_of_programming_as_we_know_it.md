@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "art[s]就像我们知道的一样编程被AI终结了 "
+title: "[Share]就像我们知道的一样编程被AI终结了 "
 date: 2025-03-02
 categories: []
 tags: [ARTS]
