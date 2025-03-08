@@ -13,12 +13,13 @@ tags: [ARTS]
 
 ## 数组
 
-数组和链表都是一种线性表，但是他们的静态表现不同。数组是紧密排列的内存区域，而链表
-是随机排布的内存。【这里其实是有原因的，磁鼓存储】
+数组和链表都是一种线性表，但是他们的静态表现不同。数组是**紧密排列**的内存区域，而链表
+是随机排布的内存。【这里其实是有原因的，[磁鼓存储](https://en.wikipedia.org/wiki/Drum_memory)】
 
 关于数组的使用，关键在与其指针的运用。这里引入一个滑动窗口问题来介绍。
 
 ## 发现滑动窗口
+
 在讨论滑动窗口之前，我们先看看，使用滑动窗口的场景有什么特点？
 用一个leetcode的题目来看看。
 
@@ -84,8 +85,11 @@ char *minWindow(char *s, char *t)
 ```
 
 这样如上代码所演示的逻辑。我们挑一个来解释。
+
 当s=ADOBECODEBANC
-i=0,j=0
+
+i=0, j=0
+
 t=ABC
 
 大概当j=5的时候ABC的target就都被满足了，这时候就找到了指定字符。这样就只要把所有字符串
@@ -127,8 +131,9 @@ $\mathcal{O}(|s| \times |t|)\times \mathcal{O}(|s|^2)$
 26.                 E B A N C 
 27.                   B A N C 
 ```
-想想看这个思路重复计算了什么？比如如果我们需要的是最小的串那在我们发现
-ADBEC后的所有串都是不需要的但是这个方法是必须把这些串都算完才能找下一组。
+想想看这个思路**重复计算**了什么？
+
+如果我们需要的是最小的串那在我们发现**ADBEC**后的所有串都是不需要的,但是这个方法是必须把这些串都算完才能找下一组。
 也就是说在发现一个串之后，应该立刻break当前循环，continue外层循环。
 ```c
 char *minWindow(char *s, char *t)
@@ -148,10 +153,10 @@ char *minWindow(char *s, char *t)
         }
 }
 ```
-修改之后得出的数据明显少了很多。这样相当于只调控右边的指针让右边指针及时退出，明显
-还可以通过调整左边的指针来让数据变更少。
+修改之后得出的数据明显少了很多。这样相当于只调控**右边**的指针让右边指针及时退出，明显
+还可以通过调整**左边**的指针来让数据变更少。
 ```
-1. A D O B E C 
+1. A D O B E C
 2.   D O B E C O D E B A
 3.     O B E C O D E B A
 4.       B E C O D E B A
@@ -162,14 +167,16 @@ char *minWindow(char *s, char *t)
 9.                 E B A N C
 10.                  B A N C
 ```
-经过观察你可以发现第二次的数据的最右边都是target数组里的字符 。
-2-6和7-10都是同一个字串的简化。所以其实同样的，在确定右边指针后就可以调整左边指针来寻找最好数据。
+经过观察你可以发现第二次的数据的最右边都是target数组里的字符 。上图的**2-6**和**7-10**都是同一个字串的简化。所以其实同样的，在确定右边指针后就可以调整左边指针来寻找最好*情况*。
+
 滑动窗口，几乎要被发明出来了。
 
 ## 滑动窗口
+
 很自然的我们发现如果有一个既可以控制左边指针又能控制右边指针的算法，就能再一次简化搜索范围。
 
 ## 滑动窗口的算法
+
 1. 首先需要left-right指针这两个指针构成我们需要的窗口。
 
 2. 通过循环增加right指针从而扩大窗口，直到在窗口中看到所有目标元素。
@@ -293,11 +300,14 @@ char *minWindow_opt(char *s, char *t)
 
         return res ? range_str(shortest_left, shortest_right, s) : "";
 
-        return range_str(shortest_left, shortest_right, s);
 }
 ```
-下面修改过的方案，可以发现这个方案还是没法通过leetcode最后结构test case
-这时候我们可以通过算函数的时间复杂度来判断如何修改策略。
+下面修改过的方案，可以发现这个方案还是没法通过leetcode最后几个test case, 这时候我们可以通过算函数的时间复杂度来判断如何修改策略。
+
+`has_target_char_map(from,to,s,t,t_len,target_map)` $ \mathcal{O}( (to-from) \times tlen + mapsize)$
+`minWindow_opt(s,t)` $\mathcal{O}(slen) \times \mathcal{O}( (to-from) \times tlen + mapsize) $
+
+整体应该是  $\mathcal{O}(N \times K \times M)$
 ```c
 #define MAP_SIZE 128
 
@@ -396,12 +406,6 @@ char *minWindow_opt(char *s, char *t)
 }
 ```
 
-`has_target_char_map(from,to,s,t,t_len,target_map)` $ \mathcal{O}( (to-from) \times tlen + mapsize)$
-`minWindow_opt(s,t)` $\mathcal{O}(slen) \times \mathcal{O}( (to-from) \times tlen + mapsize) $
-
-整体应该是  $\mathcal{O}(N \times K \times M)$
-
-
 下面会给出一个更简单效率更高的方案，我通过分析他们的不同来写出滑动窗口需要关注的点。
 ```go
 char *minWindow_opt_2(char *s, char *t)
@@ -471,7 +475,7 @@ char *minWindow_opt_2(char *s, char *t)
 二分搜索是一个很容易出错也很容易理解的算法。简单来说就是通过不断寻找剩下的数据的中间值
 来搜索目标数字。
 
-Knuth在他的《计算机程序设计与艺术》卷三6.2.1中提到“尽管二分查找的基本思想相当简单，但细节可能需要更强的技巧，许多优秀的程序员在最初尝试的时候，
+[Knuth](https://en.wikipedia.org/wiki/Donald_Knuth)在他的[《计算机程序设计与艺术》](https://en.wikipedia.org/wiki/The_Art_of_Computer_Programming)卷三6.2.1中提到“尽管二分查找的基本思想相当简单，但细节可能需要更强的技巧，许多优秀的程序员在最初尝试的时候，
 都有可能多次犯错。”
 
 既然是这样不如我们自己试试看先。既然是这样不如我们自己试试看先
