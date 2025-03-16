@@ -3,7 +3,7 @@ name: Deploy Jekyll to GitHub Pages
 on:
   push:
     branches:
-      - master 
+      - 'master' 
   workflow_dispatch: # 允许手动触发
 
 jobs:
