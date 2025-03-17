@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+	<title>总结OSX上面配置VIM + slimv的common Lisp环境 · 朝四暮三</title>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body, {
+          delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false}
+          ]
+      });
+  });
+</script>
+
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: true });
+</script>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="总结OSX上面配置VIM + slimv的common Lisp环境" />
+<meta name="twitter:description" content="前言作者本人是一个vim使用者，一直想学函数式的语言于是就挑了Common Lisp，可是问题是CL对vim支持不想Emacs这么好，不过爱折腾的我肯定不会罢休的。">
+
+<meta name="description" content="前言作者本人是一个vim使用者，一直想学函数式的语言于是就挑了Common Lisp，可是问题是CL对vim支持不想Emacs这么好，不过爱折腾的我肯定不会罢休的。">
+
+
+
+<link rel="icon" href="https://niclas3.github.io/assets/favicon.png">
+<link rel="apple-touch-icon" href="https://niclas3.github.io/assets/touch-icon.png">
+<link rel="stylesheet" href="https://niclas3.github.io/assets/core.css">
+<link rel="canonical" href="https://niclas3.github.io/vim+slimv%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE">
+<link rel="alternate" type="application/atom+xml" title="朝四暮三" href="https://niclas3.github.io/feed.xml" />
+
+
+
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga( 'create', '', 'auto' );
+		ga( 'send', 'pageview' );
+	</script>
+
+
+
+
+
+
+
+	</head>
+
+	<body>
+                <a href="/about">About</a>
+		<aside class="logo">
+
+	
+
+	<a href="/">
+            <img src="/assets/headImg.png" class="gravatar">
+	</a>
+	<span class="logo-prompt">Back to Home</span>
+
+</aside>
+
+
+		<main>
+			<article>
+
+	<div class="center">
+		<h1>总结OSX上面配置VIM + slimv的common Lisp环境</h1>
+		<time>February 23, 2014</time>
+	</div>
+
+	<div class="divider"></div>
+
+	<h1 id="前言">前言</h1>
+<p>作者本人是一个vim使用者，一直想学函数式的语言于是就挑了Common Lisp，可是问题是CL对vim支持不想Emacs这么好，不过爱折腾的我肯定不会罢休的。</p>
+
+<p>如果你急着配置你的环境请移步<strong>总结</strong><br />
+准备工作
+——
+1.Python环境（作者使用的是Python 2.7.x的版本）</p>
+
+<p>2.重新编译的Vim需要支持Python</p>
+
+<p>3.下载slimv的插件</p>
+
+<h2 id="折腾过程">折腾过程</h2>
+
+<p>作者在这些准备齐全过后按照<a href="(http://www.vim.org/scripts/script.php?script_id=2531)">官网</a>上面的介绍解压到.vim文件夹之后使用“,c”这个快捷键呼出STREAM结果没有任何反应。然后我就在作者制作的<a href="(http://kovisoft.bitbucket.org/tutorial.html)">Slimv Tutorial</a>第一篇里面看到原来需要一个common Lisp的编译器于是连忙用Home brew下了sbcl</p>
+
+<p><code class="language-plaintext highlighter-rouge">brew install sbcl</code></p>
+
+<p>安装完sbcl之后很明显还是不能用(╯‵□′)╯︵┻━┻于是我就在怀疑是不是我的VIM的配置的问题果然我又在<a href="(http://kovisoft.bitbucket.org/tutorial.html)">Tutorial</a>里面找到了可能需要在.vimrc文件里面添加一段代码</p>
+
+<blockquote>
+  <p>On Linux this can be something like:</p>
+</blockquote>
+
+<blockquote>
+  <p>let g:slimv_swank_cmd =’! xterm -e sbcl –load /usr/share/common-lisp/source/slime/start-swank.lisp &amp;’</p>
+</blockquote>
+
+<p>这里我只介绍怎么在Mac的环境里面配置所以就不管别的平台下面的配置了所以我在我的.vimrc文件里面添加了作者给的代码</p>
+
+<p><code class="language-plaintext highlighter-rouge">let g:slimv_swank_cmd ='! xterm -e sbcl --load /usr/share/common-lisp/source/slime/start-swank.lisp &amp;'
+</code></p>
+
+<p>我们可以简单的看一下这个代码貌似是用一个终端控制台在后台开启什么东西的样子（其实是在后台开启slime这个我们后面会知道）。于是我填了代码之后还是没有什么用处。好吧，于是我就求助了Baidu和Google这两个大神了，得到的结果很不理想，基本上common Lisp环境配置都是在Emacs上面的只有很少的页面是讲怎么在OSX上面配置VIM+slimv的兜兜转转我在豆瓣的读书笔记里面找到<a href="(http://book.douban.com/annotation/15415332/)">这篇</a>文章，从笔记里面我知道原来不能用terminal里面的vim来使用slimv，其实好像是可以的只要加上<code class="language-plaintext highlighter-rouge">set guioptions+=m</code>来打开菜单就能使用了（我的打不开也不知道为什么有知道的vimer记得告诉我，谢谢）言归正传，知道不能在终端打开vim我只能用Macvim来代替了，果然使用了MacVim之后就可以看到菜单栏里面的slimv的选项菜单了，但是（我已经不想看到这个词了）还是不能用，不过根据上面的笔记来说，我猜我这里出的问题可能是我的MacVim不支持Python于是我准备下一下MacVim的<a href="(https://code.google.com/p/macvim/wiki/Building)">源代码</a>来自己编译<strong>具体编译流程url里面很详细</strong>。</p>
+
+<p>经过一会编译出来符合要求<strong>支持Python和是32位的vim</strong>的MacVim后再实验还是不可以。
+于是我就想会不会是common Lisp的编译器的问题于是我用<strong>Home brew</strong>下载了ccl<code class="language-plaintext highlighter-rouge">brew install Clozure CL</code></p>
+
+<p>把在.vimrc里面的脚本改成<code class="language-plaintext highlighter-rouge">let g:slimv_swank_cmd = '!osascript -e "tell application \"Terminal\" to do script \"ccl --load ~/.vim/slime/start-swank.lisp\""'</code></p>
+
+<p>再运行终于可以了。
+~(≧▽≦)/~</p>
+
+<h2 id="总结">总结</h2>
+<p>这次对slimv的折腾，几番周折，主要没有中文的资料很麻烦后来在<a href="(http://book.douban.com/annotation/15415332/)">douban笔记</a>里面找到了资料真的需要感谢下这个作者。
+我在梳理一下</p>
+
+<ul>
+  <li>你需要一个支持Python和32位的MacVim （你可能需要自己编译<a href="(https://code.google.com/p/macvim/wiki/Building)">这里</a>了解细节）</li>
+  <li>你需要一个Python的运行环境</li>
+  <li>你需要下载slimv的插件并且解压到.vim文件夹里<code class="language-plaintext highlighter-rouge">unzip xxx.zip -d ~/.vim</code>（<a href="(http://www.vim.org/scripts/script.php?script_id=2531)">这里</a>下载）</li>
+  <li>你需要一个ccl的common Lisp的解释器 <code class="language-plaintext highlighter-rouge">brew install Clozure CL</code></li>
+  <li>在你的.vimrc文件里面添加<code class="language-plaintext highlighter-rouge">let g:slimv_swank_cmd = '!osascript -e "tell application \"Terminal\" to do script \"ccl --load ~/.vim/slime/start-swank.lisp\""'</code>（这不是必须得）</li>
+  <li>最后打开你的MacVim跟着作者的<a href="(http://kovisoft.bitbucket.org/tutorial.html)">tutorial</a>来学习使用吧</li>
+</ul>
+
+<p>最后，希望我的文章能给爱折腾的你一点用，希望你们能坚持common Lisp的学习，与你共勉</p>
+
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/cn/"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/cn/80x15.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/cn/">知识共享署名-非商业性使用-禁止演绎 3.0 中国大陆许可协议</a>进行许可。
+<strong>本文章遵循CC协议，请自觉遵守    -作者Niclas</strong></p>
+
+<p>2013-12-30 20:00</p>
+
+
+
+</article>
+
+<div class="page-navigation">
+	
+    <a class="next" href="https://niclas3.github.io/%E5%9C%A8OSX10.9%E8%87%AA%E5%B7%B1%E7%BC%96%E8%AF%91vim7.4%E6%BA%90%E7%A0%81" title="NEXT: 在OSX10.9（小牛）自己编译支持Python的vim7.4源码之路">&lt;&lt;</a>
+		<span> &middot; </span>
+  
+		<a class="home" href="https://niclas3.github.io" title="Back to Homepage">Home</a>
+  
+		<span> &middot; </span>
+    <a class="prev" href="https://niclas3.github.io/Mac%E4%B8%8A%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEbochs" title="PREV: Mac中安装配置bochs(with SDL)">&gt;&gt;</a>
+  
+</div>
+
+		</main>
+
+		<div class="footer">
+  <span class="block">😝 <a href="/" title="">曰 朝三而暮四 众狙皆怒 然则朝四而暮三 众狙皆悦</a> by <a href="http://niclas3.github.io">M</a>.</span>
+  <span class="block">&copy; 2025 niclas</span>
+</div>
+
+
+	</body>
+
+</html>

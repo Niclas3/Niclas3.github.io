@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+	<title>[Share] 怎么制作一个计算器 · 朝四暮三</title>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body, {
+          delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false}
+          ]
+      });
+  });
+</script>
+
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: true });
+</script>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="[Share] 怎么制作一个计算器" />
+<meta name="twitter:description" content="原文">
+
+<meta name="description" content="原文">
+
+
+
+<link rel="icon" href="https://niclas3.github.io/assets/favicon.png">
+<link rel="apple-touch-icon" href="https://niclas3.github.io/assets/touch-icon.png">
+<link rel="stylesheet" href="https://niclas3.github.io/assets/core.css">
+<link rel="canonical" href="https://niclas3.github.io/art-s-_w1_how_to_build_calculator">
+<link rel="alternate" type="application/atom+xml" title="朝四暮三" href="https://niclas3.github.io/feed.xml" />
+
+
+
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga( 'create', '', 'auto' );
+		ga( 'send', 'pageview' );
+	</script>
+
+
+
+
+
+
+
+	</head>
+
+	<body>
+                <a href="/about">About</a>
+		<aside class="logo">
+
+	
+
+	<a href="/">
+            <img src="/assets/headImg.png" class="gravatar">
+	</a>
+	<span class="logo-prompt">Back to Home</span>
+
+</aside>
+
+
+		<main>
+			<article>
+
+	<div class="center">
+		<h1>[Share] 怎么制作一个计算器</h1>
+		<time>February 17, 2025</time>
+	</div>
+
+	<div class="divider"></div>
+
+	<p><a href="https://x.com/ChadNauseam/status/1890889465322786878"><strong>原文</strong></a></p>
+
+<h2 id="一个计算器大家都可以写一个">一个计算器？大家都可以写一个</h2>
+<p align="right">niclas 译</p>
+
+<p>也许不是这样的。</p>
+
+<p>一个计算器需要给出你键入的数学表达式的结果。这个功能比它听上去的难非常非常多。</p>
+
+<p>我接下来要告诉你一个有史以来最伟大计算器应用诞生的故事.</p>
+
+<p><img src="/assets/20250217_htbc_01.png" alt="" /></p>
+
+<p>这是一个iOS上的计算器应用，你发现了吧！它算错了
+(10^100) + 1 - (10^100)  + 1 - (10^100)答案是0不是1</p>
+
+<p>安卓的计算器是对的，故事从现在开始就变得有些疯狂了。
+<img src="/assets/20250217_htbc_02.jpg" alt="" /></p>
+
+<p>谷歌雇佣了Hans-J.Boehm ，就是那个“boehm 垃圾回收器”的Boehm。</p>
+
+<p>谷歌需要一个精英程序员来修复垃圾回收和并发编程问题。他推动了C++ 的
+shared Variable 语义。</p>
+
+<p>但是谷歌给他了更艰巨的任务：写一个计算器应用。
+<img src="/assets/20250217_htbc_03.jpg" alt="" /></p>
+
+<p>即使是Boehm大神，这个任务依然很艰巨。</p>
+
+<p>所有计算器应用的目的都是给你正确的答案。浮点数（floating pointer）没有这么精准
+浮点数不能表示0.3或者10^100.这就意味着一个建立在浮点数体系下的计算器就像一幢建在沙子上的房子。</p>
+
+<p><img src="/assets/20250217_htbc_04.jpg" alt="" /></p>
+
+<p>再怎么强调都不为过。一个计算器如果想要给出正确的表达式答案，它必须可以表示数字。</p>
+
+<p>但几乎所有的数字都不能被IEEE浮点数来表示。这样就导致了，即使是最简单的运算符只要使用浮点数
+运算就需要非常小心才能得到精确的答案。</p>
+
+<p><img src="/assets/20250217_htbc_05.jpg" alt="" /></p>
+
+<p>当然一些问题，你可以通过大数（big
+number）来规避。大多数数值类型只有2bytes或者4bytes。这点长度是不够大数使用的，使用大数这个技术
+表示整数是没有内存限制的，他们会根据需要的精度获取对应的内存大小。
+大数的引入解决了 (10^100) + 1  - (10^100)
+这个问题。但是大数只能表示整数，分数怎么办呢？</p>
+
+<p><img src="/assets/20250217_htbc_06.jpg" alt="" /></p>
+
+<p>分数很好处理。分子和分母分别使用大数表示就行。这种类型在算术运算上是简单的，而且始终可以给出精确的答案。</p>
+
+<p>很多人可能在这里就宣布胜利了，但Boehm没有满意。
+<img src="/assets/20250217_htbc_07.jpg" alt="" /></p>
+
+<p>数学可不只是分数，那 $\pi$ 和$\sqrt{2}$呢？如果没有定义$\pi$的分数形式的话，一个基于任意精度分数的计算器依然不能告诉你圆的周长，</p>
+
+<p>如果一个计算器都不能处理初中数学，那它应该不是一个好计算器。</p>
+
+<p><img src="/assets/20250217_htbc_08.jpg" alt="" /></p>
+
+<p>代数运算可以让他更接近目标。让我们忘记把数表示为分数形式，数也可以通过他们满足的多项式方程的形式表示。
+比如$\sqrt{2}$,可以表示成x^2-2=0。（当然你需要取正数解）</p>
+
+<p><img src="/assets/20250217_htbc_09.jpg" alt="" /></p>
+
+<p>现在数学运算就变得需要一些小技巧实现了。</p>
+
+<p>加法：你需要创造一个新的多项式，这个多项式的根就是加后的结果
+乘法：你需要使用多项式结合（polynomil composition）和结果式（resultants）</p>
+
+<p>猜猜怎么样？Boehm还是觉得不够，这套系统也只能处理代数数（algebraic
+number）。我们还是不能处理$\pi$。</p>
+
+<p>所以 Boehm 没什么选择只能继续深入。接下来我们就需要认真一点了。</p>
+
+<p>我们从整数（大数）开始，经过了有理数（rational number）然后是代数数（algebraic
+number），下一个是什么？</p>
+
+<p>构造性实数（constructive real number）</p>
+
+<p><img src="/assets/20250217_htbc_10.jpg" alt="" /></p>
+
+<p>接着Boehm开始思考“递归实数算术”（recursive real arithmetic）。</p>
+
+<p>你提供一个算式和所需答案的精度，RRA就至少可以给你一个对应精度的答案。</p>
+
+<p>看看这个这本经典课本的封面，这上面的尺子变得越来越小。
+<img src="/assets/20250217_htbc_11.jpg" alt="" /></p>
+
+<p>构造性实数是一种可以通过计算越来越精确的数。</p>
+
+<p>你没法告诉我$\pi$究竟是多少位。但是如果你告诉我你想要一个与$\pi$相差0.01的实数，我就可以告诉你
+是3.14。</p>
+
+<p>$\pi$的值与3.14的差距小于0.01.所以3.14是一个有效答案。</p>
+
+<p><img src="/assets/20250217_htbc_12.jpg" alt="" /></p>
+
+<p>现在，我想要一个与2$\pi$差距0.01的数。 你也知道怎么生成$\pi$（3.1415926….）</p>
+
+<p>这样你看就可以用这个值乘2.但是你需要使用多少位的数字，来保证得到的答案与2$\pi$在0.01差距内呢？</p>
+
+<p>将一个数乘以2会让错误也翻倍。如果你需要一个与2$\pi$相差0.01一内的数，你就需要一个
+0.005精度的$\pi$的近似值，也就是3.141。 3.141乘以2就可以得到想要精度的2 $\pi$值。</p>
+
+<p><img src="/assets/20250217_htbc_13.jpg" alt="" /></p>
+
+<p>RRA就是这么运行的。</p>
+
+<p>所有RRA里的数字都被表示为，一个参数是实数返回值是实数的函数。</p>
+
+<p>这个函数需要一个容差（tolerance）作为参数，函数会返回就会在这个容差内的实数。</p>
+
+<p><img src="/assets/20250217_htbc_14.jpg" alt="" /></p>
+
+<p>RRA很容易用。你只需要告诉它你需要的精度它就会递归到你需要的精度并给你答案。</p>
+
+<p>它也可以处理$\pi$或者$\sqrt{2}$。这也是一个计算器的必备功能。</p>
+
+<p>你一定在想，现在Boehm应该会停在这里了。</p>
+
+<p>只需要将‘输出精度’设置为计算器显示的数字位数，对吧？</p>
+
+<p>那么所有计算器显示的所有数都会正确。所以现在计算器总是显示正确的答案了对吧？</p>
+
+<p><img src="/assets/20250217_htbc_15.jpg" alt="" /></p>
+
+<p>但，没有这么快。当用户键入‘1-1’，答案是0,所以显示0.</p>
+
+<p>但是RRA只会告诉你‘1-1’的结果在误差为0.00000000000000的范围内。</p>
+
+<p>显示0.00000000000000在屏幕上，当答案就是0的时候就不是一个好的用户体验了。</p>
+
+<p><img src="/assets/20250217_htbc_16.jpg" alt="" /></p>
+
+<p>Boehm需要重新开始。在这个时候他一定是感到担忧的，他的“空间优化的保守垃圾回收”和这个
+相比简直是小朋友的游戏。</p>
+
+<p>他一个人做不来这事情。他雇用了一些同事，Corky Cartwright 和 Vernon Lee
+Jr来帮他。</p>
+
+<p><img src="/assets/20250217_htbc_17.jpg" alt="" /></p>
+
+<p>你可以检查两个RRA数是不一样的，通过不停的增加精度直到找到不同的位。</p>
+
+<p>但是如果两个数是相同的，你就必须不停的增加精度，但因为是相同的所以这个程序就不会停止。</p>
+
+<p><img src="/assets/20250217_htbc_18.jpg" alt="" /></p>
+
+<p>还记得吗，如果计算器显示e^(-10000)的答案是0,那就错了。它的答案并不是0，这个算式的
+答案应该是0.00000…然后一直输出下去直到你看到变化。</p>
+
+<p>但是，计算器应该在计算sin($\pi$)的时候显示0, sin($\pi$)的值就是0。
+RRA并不能告诉我们sin($\pi$)的值就是0.</p>
+
+<p>或者有些计算器就像iOS的计算器一样不给出答案。（笑）</p>
+
+<p><img src="/assets/20250217_htbc_19.jpg" alt="" /></p>
+
+<p>使用结构化实数不能展示出正确的答案。但是Boehm和他的同事意识到需要改变工作方式。他们
+不需要处理所有的结构化实数。</p>
+
+<p>他们只需要处理那些计算器需上运算能够表达的数。
+运算符有这些</p>
+<ol>
+  <li>四则运算和平方根运算</li>
+  <li>三角函数和反三角函数运算</li>
+  <li>指数和对数运算</li>
+</ol>
+
+<p>这对于结构化实数来说是非常少的数字。而且事实上，已经有人在之前做过相关问题的研究了。
+Dan Richardson和John Fitch，他们1994就解决了这个问题。</p>
+
+<p><img src="/assets/20250217_htbc_20.jpg" alt="" /></p>
+
+<p>如果能找到一个斯卡纽猜想（Schanuel‘s conjecture）的反例，那他们的解决方案就完全正确了。</p>
+
+<p>但是事实上，还没有找到这样的数。</p>
+
+<p>斯卡纽猜想是数论中重要的猜想，至今为止也没有人找到它的反例。</p>
+
+<p><img src="/assets/20250217_htbc_21.jpg" alt="" /></p>
+
+<p>听上去很完美，就只有一个问题了。</p>
+
+<p>但这计算速度还是太慢了, 1 不等于1-e^(e^(-1000))。但是如果使用Richardson Fitch’s
+算法来检测，需要花的步骤数量比这个宇宙的原子数量还多。</p>
+
+<p>他们需要更快的方案。</p>
+
+<p>原本的问题是如何判断两个结构性实数是否相等。这个问题似乎不好解决。</p>
+
+<p>他们通过限制如何构造这些数来简化问题，让问题变得可解了，只是速度变得很慢。</p>
+
+<p>他们还能把他再简化吗？</p>
+
+<p>他们发现如果答案真的是0，他们显示了“0.000000..”也并不是世界末日，不是完美的用户体验而以。
+他们只要不要在答案是0.0000001的时候显示成0就行了。</p>
+
+<p>也许这样就能写出一个快速的构造算法了吗？</p>
+
+<p>之后他们想出了一些好主意。RRA提供了一个全功能的构造实数，但也有一个坏处，他没法给出一个准确的答案。</p>
+
+<p>有理数运算（rational arithmetic）可以给你准确的答案，但是没法表示$\pi$</p>
+
+<p>不然就取长补短怎么样？</p>
+
+<p><img src="/assets/20250217_htbc_22.jpg" alt="" />
+<img src="/assets/20250217_htbc_23.jpg" alt="" /></p>
+
+<p>团队发现一个规律，如果用户只是输入6*9或者8/3,你就不需要使用RRA来处理，有理数运算就可以就可以处理这些情况。</p>
+
+<p>你只需要在有理数运算不够用的时候使用RRA就好了。比如算式里出现了$\pi$或者$\sqrt{2}$的时候使用RRA，其他时候交给实数运算就好。</p>
+
+<p>有理数是准确的，但是不能表达$\pi$。</p>
+
+<p>RRA数可以表达$\pi$但是不可以准确表达数。</p>
+
+<p>他们的解决方案是：所有的数都用两种表示法来表示。</p>
+
+<p>但这还不够，一旦算式里有RRA了那么结果就是不准确的。</p>
+
+<p><img src="/assets/20250217_htbc_24.jpg" alt="" /></p>
+
+<p>但即使是无理数，RRA有的时候也是大材小用。</p>
+
+<p>RRA以函数的形式表示$\pi$，这个函数可以返回一个任意精度的$\pi$的有理数。（只有RRA的数字
+以函数形式表示）</p>
+
+<p>如果你说“我想要一个精度是0.001的$\pi$”，RRA就会告诉你答案是3.141</p>
+
+<p><img src="/assets/20250217_htbc_25.jpg" alt="" />
+有的时候你需要RRA。</p>
+
+<p>但是有的时候我只需要一个特殊的符号代表$\pi$，这个时候就用这个符号而不是使用RRA。</p>
+
+<p>我们叫这个符号表示法，$\pi$被写成符号$\pi$而不是一个无限不循环小数数列。
+<img src="/assets/20250217_htbc_26.jpg" alt="" /></p>
+
+<p>我们把$\pi$用符号表示，显然我们也想给实数1一个符号来表示它。</p>
+
+<p>但是我们使用的许多有理数是通过对有理数进行运算得到的。我们也可以为这些无理数提供一个
+符号表示。</p>
+
+<p>他们选择符号化这些运算 √arg, eᵃʳᵍ, ln(arg), log₁₀(arg), sin(πarg),
+tan(πarg),等等。（arg在这里是一个有理数）</p>
+
+<p>所以最后，他们对于数字的定义是：有理数和实数相乘，其中实数要么是RRA实数，也么是符号化的实数。</p>
+
+<p><img src="/assets/20250217_htbc_27.jpg" alt="" /></p>
+
+<p>所以最终表示是这样的，一个数被表示为一个有理数乘实数。</p>
+
+<p><img src="/assets/20250217_htbc_28.jpg" alt="" /></p>
+
+<p>记住，最根本的问题是RRA数没法检查相等性。只要你使用了RRA那整个运算都是不精确的。</p>
+
+<p>但是有些时候你需要RRA。</p>
+
+<p>所以他们做的所有的事情就是尽量避免使用RRA！</p>
+
+<p>举个例子, (1 x $\pi$)+(3 x $\pi$)
+，我们很幸运加法两边的实数部分都是$\pi$，由于实数部分相同所以我们直接把有理数部分相加就好了</p>
+
+<p>如果是 (1 x $\pi$)+(3 x $\sqrt{2}$)就只能使用RRA来计算了 。</p>
+
+<p>有了这个符号表示法，这样有两个好处：
+所有在屏幕上显示的位数都是对的，而且再也不会显示不需要的部分了。</p>
+
+<p>构造一个“计算机代数系统”也是同样的目标，但是更慢也更复杂。</p>
+
+<p>维护一个产品质量级别的计算机代数系统非常复杂，非常少的人可以有能力做到这样的事情。</p>
+
+<p>但是Boehm和他的团队所提出的解决方案是100%正确的，它以实现复杂度为1%的情况下，已经达到了接近完美的用户体验。</p>
+
+<p><img src="/assets/20250217_htbc_29.jpg" alt="" /></p>
+
+<p>这就是工程！你应该读这篇 <a href="https://dl.acm.org/doi/pdf/10.1145/3385412.3386037">paper</a></p>
+
+<p>我希望你下次使用你安卓机的计算器的时候可以更感激一些。</p>
+
+<h2 id="后">后</h2>
+
+<p>文章提供一个计算机代数系统的构建的工程实现。可以学习的是对于不能解决的问题walkaround的
+方法。拆分问题，把不能解决的问题限制在一个可以控制的范围内是一种好用的模式。</p>
+
+<p>Wed Feb 19 12:08:06 PM CST 2025</p>
+
+
+
+</article>
+
+<div class="page-navigation">
+	
+    <a class="next" href="https://niclas3.github.io/a-rts_w1_basic_algorithm" title="NEXT: [A]RTS   当我们在谈论算法的时候我们在谈论什么">&lt;&lt;</a>
+		<span> &middot; </span>
+  
+		<a class="home" href="https://niclas3.github.io" title="Back to Homepage">Home</a>
+  
+		<span> &middot; </span>
+    <a class="prev" href="https://niclas3.github.io/program/arts/what_is_arts" title="PREV: 什么是ARTS">&gt;&gt;</a>
+  
+</div>
+
+		</main>
+
+		<div class="footer">
+  <span class="block">😝 <a href="/" title="">曰 朝三而暮四 众狙皆怒 然则朝四而暮三 众狙皆悦</a> by <a href="http://niclas3.github.io">M</a>.</span>
+  <span class="block">&copy; 2025 niclas</span>
+</div>
+
+
+	</body>
+
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+	<title>Mac中安装配置bochs(with SDL) · 朝四暮三</title>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body, {
+          delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false}
+          ]
+      });
+  });
+</script>
+
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: true });
+</script>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="Mac中安装配置bochs(with SDL)" />
+<meta name="twitter:description" content="前言我为了做一些系统编程需要使用bochs来做一些调试和模拟的工作,所以需要在自己的Mac上面安装bochs，因为需要debug的功能所以自己需要一个自己编译版本的bochs所以就在SF上面下载了bochs-2.6来自己编译安装。">
+
+<meta name="description" content="前言我为了做一些系统编程需要使用bochs来做一些调试和模拟的工作,所以需要在自己的Mac上面安装bochs，因为需要debug的功能所以自己需要一个自己编译版本的bochs所以就在SF上面下载了bochs-2.6来自己编译安装。">
+
+
+
+<link rel="icon" href="https://niclas3.github.io/assets/favicon.png">
+<link rel="apple-touch-icon" href="https://niclas3.github.io/assets/touch-icon.png">
+<link rel="stylesheet" href="https://niclas3.github.io/assets/core.css">
+<link rel="canonical" href="https://niclas3.github.io/Mac%E4%B8%8A%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AEbochs">
+<link rel="alternate" type="application/atom+xml" title="朝四暮三" href="https://niclas3.github.io/feed.xml" />
+
+
+
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga( 'create', '', 'auto' );
+		ga( 'send', 'pageview' );
+	</script>
+
+
+
+
+
+
+
+	</head>
+
+	<body>
+                <a href="/about">About</a>
+		<aside class="logo">
+
+	
+
+	<a href="/">
+            <img src="/assets/headImg.png" class="gravatar">
+	</a>
+	<span class="logo-prompt">Back to Home</span>
+
+</aside>
+
+
+		<main>
+			<article>
+
+	<div class="center">
+		<h1>Mac中安装配置bochs(with SDL)</h1>
+		<time>February 23, 2014</time>
+	</div>
+
+	<div class="divider"></div>
+
+	<h2 id="前言">前言</h2>
+<p>我为了做一些系统编程需要使用<a href="www.">bochs</a>来做一些调试和模拟的工作,所以需要在自己的Mac上面安装bochs，因为需要debug的功能所以自己需要一个自己编译版本的bochs所以就在SF上面下载了<a href="www.">bochs-2.6</a>来自己编译安装。</p>
+
+<p>几经波折。还是没有成功安装bochs最后只能求助<a href="http://stackoverflow.com/questions/1677324/compiling-bochs-on-mac-os-x-snow-leopard/18544680#18544680">StackOverflow</a>。下面是我结合在爆栈上面看到的总结的步骤希望能帮到你。</p>
+
+<h2 id="准备">准备</h2>
+<p>1.下载<a href="www.">bochs-2.6</a></p>
+
+<p>2.下载<a href="http://www.libsdl.org">Install the SDL 1.2 Library</a> 或者可以使用<strong>Homebrew</strong>安装 <code class="language-plaintext highlighter-rouge">brew install sdl</code></p>
+
+<h2 id="步骤">步骤</h2>
+<p>修改.conf.macx中的配置如下</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./configure --enable-ne2000 \
+        --enable-all-optimizations \
+        --enable-cpu-level=6 \
+        --enable-x86-64 \
+        --enable-vmx=2 \
+        --enable-pci \
+        --enable-usb \
+        --enable-usb-ohci \
+        --enable-e1000 \
+        --enable-debugger \
+        --enable-disasm \
+        --disable-debugger-gui \
+        --with-sdl \
+        --prefix=$HOME/opt/bochs
+</code></pre></div></div>
+
+<p>然后<code class="language-plaintext highlighter-rouge">chmod u+x .conf.macx &amp;&amp; ./.conf.macx</code></p>
+
+<p>直接<code class="language-plaintext highlighter-rouge">sudo make &amp;&amp; make install</code> 就可以了</p>
+
+<h2 id="后记">后记</h2>
+<p>这里吐槽一下bochs的团队，因为Apple放弃了Carbon转投Cocoa就不做x64的版本的bochs了，还撂下话说反正bochs是开源软件你能自己添加就自己动手吧（<a href="http://appleinsider.com/articles/12/02/18/mountain_lion_focuses_on_cocoa_drops_x11_and_deprecates_carbon">傲娇脸</a>。
+好了，其实最后我还是希望有能力阅读外文的同学去StackOverflow注册一个账号，答答题问问问题比在X度和知乎靠谱多了。</p>
+
+<p><a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/cn/"><img alt="知识共享许可协议" style="border-width:0" src="http://i.creativecommons.org/l/by-nc-nd/3.0/cn/80x15.png" /></a><br />本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/3.0/cn/">知识共享署名-非商业性使用-禁止演绎 3.0 中国大陆许可协议</a>进行许可。</p>
+
+<p><strong>本文章遵循CC协议，请自觉遵守    -作者Niclas</strong></p>
+
+<p>2014年2月23日 下午1:10</p>
+
+
+
+</article>
+
+<div class="page-navigation">
+	
+    <a class="next" href="https://niclas3.github.io/vim+slimv%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE" title="NEXT: 总结OSX上面配置VIM + slimv的common Lisp环境">&lt;&lt;</a>
+		<span> &middot; </span>
+  
+		<a class="home" href="https://niclas3.github.io" title="Back to Homepage">Home</a>
+  
+		<span> &middot; </span>
+    <a class="prev" href="https://niclas3.github.io/C%E4%B8%AD%E7%9A%84const" title="PREV: C中的const测试解析">&gt;&gt;</a>
+  
+</div>
+
+		</main>
+
+		<div class="footer">
+  <span class="block">😝 <a href="/" title="">曰 朝三而暮四 众狙皆怒 然则朝四而暮三 众狙皆悦</a> by <a href="http://niclas3.github.io">M</a>.</span>
+  <span class="block">&copy; 2025 niclas</span>
+</div>
+
+
+	</body>
+
+</html>

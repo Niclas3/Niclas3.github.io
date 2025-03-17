@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+	<title>文件需要一个家 · 朝四暮三</title>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body, {
+          delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false}
+          ]
+      });
+  });
+</script>
+
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: true });
+</script>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="文件需要一个家" />
+<meta name="twitter:description" content="沿袭自UNIX的精神，”everything is a file.” 这里我们要讨论一下两件事，第一，everything具体指的是什么东西？第二，file指的是什么?">
+
+<meta name="description" content="沿袭自UNIX的精神，”everything is a file.” 这里我们要讨论一下两件事，第一，everything具体指的是什么东西？第二，file指的是什么?">
+
+
+
+<link rel="icon" href="https://niclas3.github.io/assets/favicon.png">
+<link rel="apple-touch-icon" href="https://niclas3.github.io/assets/touch-icon.png">
+<link rel="stylesheet" href="https://niclas3.github.io/assets/core.css">
+<link rel="canonical" href="https://niclas3.github.io/program/os/on_file_system">
+<link rel="alternate" type="application/atom+xml" title="朝四暮三" href="https://niclas3.github.io/feed.xml" />
+
+
+
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga( 'create', '', 'auto' );
+		ga( 'send', 'pageview' );
+	</script>
+
+
+
+
+
+
+
+	</head>
+
+	<body>
+                <a href="/about">About</a>
+		<aside class="logo">
+
+	
+
+	<a href="/">
+            <img src="/assets/headImg.png" class="gravatar">
+	</a>
+	<span class="logo-prompt">Back to Home</span>
+
+</aside>
+
+
+		<main>
+			<article>
+
+	<div class="center">
+		<h1>文件需要一个家</h1>
+		<time>January 2, 2025</time>
+	</div>
+
+	<div class="divider"></div>
+
+	<p>沿袭自UNIX的精神，”everything is a file.” 这里我们要讨论一下两件事，第一，
+everything具体指的是什么东西？第二，file指的是什么?</p>
+
+<ol>
+  <li>everything 泛指OS中的资源，也就是硬盘里的数据，进程，配置，内存数据，等等。</li>
+  <li>files 指的是一种结构，首先这种结构标记了一个范围的有意义的数据，且这个结构支持
+ 某种操作方式来处理这种结构。方式比如说，open/close/write/read/seek
+ 这一系列的操作。</li>
+</ol>
+
+<h2 id="inodes-x-vnodes-x-files">inodes X vnodes X files</h2>
+<p>inode: 提供一种文件和硬盘数据块的中间层抽象
+vnode: 提供一种文件系统的节点
+file : 提供一个运行时的文件抽象，为了和进程交互.</p>
+
+<h2 id="文件系统">文件系统</h2>
+<p>文件系统则是以文件这种结构组织数据的具体实现。</p>
+
+
+</article>
+
+<div class="page-navigation">
+	
+    <a class="next" href="https://niclas3.github.io/program/arts/what_is_arts" title="NEXT: 什么是ARTS">&lt;&lt;</a>
+		<span> &middot; </span>
+  
+		<a class="home" href="https://niclas3.github.io" title="Back to Homepage">Home</a>
+  
+		<span> &middot; </span>
+    <a class="prev" href="https://niclas3.github.io/program/os/on_interrupt" title="PREV: 聊聊中断">&gt;&gt;</a>
+  
+</div>
+
+		</main>
+
+		<div class="footer">
+  <span class="block">😝 <a href="/" title="">曰 朝三而暮四 众狙皆怒 然则朝四而暮三 众狙皆悦</a> by <a href="http://niclas3.github.io">M</a>.</span>
+  <span class="block">&copy; 2025 niclas</span>
+</div>
+
+
+	</body>
+
+</html>

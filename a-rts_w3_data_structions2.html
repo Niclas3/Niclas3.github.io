@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+	<title>[A]RTS 数据结构的基石2 · 朝四暮三</title>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body, {
+          delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false}
+          ]
+      });
+  });
+</script>
+
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: true });
+</script>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="[A]RTS 数据结构的基石2" />
+<meta name="twitter:description" content="数组">
+
+<meta name="description" content="数组">
+
+
+
+<link rel="icon" href="https://niclas3.github.io/assets/favicon.png">
+<link rel="apple-touch-icon" href="https://niclas3.github.io/assets/touch-icon.png">
+<link rel="stylesheet" href="https://niclas3.github.io/assets/core.css">
+<link rel="canonical" href="https://niclas3.github.io/a-rts_w3_data_structions2">
+<link rel="alternate" type="application/atom+xml" title="朝四暮三" href="https://niclas3.github.io/feed.xml" />
+
+
+
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga( 'create', '', 'auto' );
+		ga( 'send', 'pageview' );
+	</script>
+
+
+
+
+
+
+
+	</head>
+
+	<body>
+                <a href="/about">About</a>
+		<aside class="logo">
+
+	
+
+	<a href="/">
+            <img src="/assets/headImg.png" class="gravatar">
+	</a>
+	<span class="logo-prompt">Back to Home</span>
+
+</aside>
+
+
+		<main>
+			<article>
+
+	<div class="center">
+		<h1>[A]RTS 数据结构的基石2</h1>
+		<time>March 7, 2025</time>
+	</div>
+
+	<div class="divider"></div>
+
+	<h2 id="数组">数组</h2>
+
+<p>我们在<a href="/a-rts_w2_data_structions">上一篇</a>文章里探讨了一些以链表为主的线性表的算法，这周我们会探讨数组。</p>
+
+<p>数组和链表都是一种线性表，但是他们的静态表现不同。数组是<strong>紧密排列</strong>的内存区域，而链表
+是<strong>随机排布</strong>的内存。【<em>链表的发明</em>是有原因的，<a href="https://en.wikipedia.org/wiki/Drum_memory">磁鼓存储</a>】</p>
+
+<p>关于数组的使用，关键在与其指针的运用。这里引入一个滑动窗口问题来介绍。</p>
+
+<h2 id="发现滑动窗口">发现滑动窗口</h2>
+
+<p>在讨论滑动窗口之前，我们先看看，使用滑动窗口的场景有什么特点？
+用一个leetcode的题目来看看。</p>
+
+<h2 id="leetcode-76-minimum-window-substring"><a href="https://leetcode.com/problems/minimum-window-substring/description/">leetcode 76 Minimum window Substring</a></h2>
+<p>这题是从一个字符串里找到最短的包含指定字符的字符串。</p>
+
+<p>比如目标字串 <strong>s=”ADOBECODEBANC”</strong>, 指定的字符是 <strong>t=”ABC”</strong>
+那么答案就是 <strong>BANC</strong></p>
+
+<p>讨论这个问题的时候，很容易就想到使用两个指针来创造一个窗口来判断这个窗口的字符串是否符合要求。
+我们先根据这个朴素的逻辑写一个代码。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">set_key</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">map</span><span class="p">,</span> <span class="kt">char</span> <span class="n">c</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">map</span><span class="p">[</span><span class="n">c</span> <span class="o">-</span> <span class="sc">'A'</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">get_key</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">map</span><span class="p">,</span> <span class="kt">char</span> <span class="n">c</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="n">map</span><span class="p">[</span><span class="n">c</span> <span class="o">-</span> <span class="sc">'A'</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="n">bool</span> <span class="nf">has_target_char</span><span class="p">(</span><span class="kt">int</span> <span class="n">from</span><span class="p">,</span> <span class="kt">int</span> <span class="n">to</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">map</span><span class="p">[</span><span class="mi">24</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">from</span><span class="p">;</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">to</span><span class="p">;</span> <span class="n">n</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">strlen</span><span class="p">(</span><span class="n">t</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">==</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">{</span>
+                                <span class="n">set_key</span><span class="p">(</span><span class="n">map</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="n">n</span><span class="p">]);</span>
+                        <span class="p">}</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="n">bool</span> <span class="n">res</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">strlen</span><span class="p">(</span><span class="n">t</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">map</span><span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">'A'</span><span class="p">]</span> <span class="o">?</span> <span class="nb">true</span> <span class="o">:</span> <span class="nb">false</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">print_range_str</span><span class="p">(</span><span class="kt">int</span> <span class="n">from</span><span class="p">,</span> <span class="kt">int</span> <span class="n">to</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">from</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">to</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">printf</span><span class="p">(</span><span class="s">"%c "</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">char</span> <span class="o">*</span><span class="nf">minWindow</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">s_len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">t_len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">s_len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">s_len</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">bool</span> <span class="n">find_string</span> <span class="o">=</span> <span class="n">has_target_char</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">find_string</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="n">print_range_str</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">s</span><span class="p">);</span>
+                                <span class="n">printf</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+                        <span class="p">}</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>这样如上代码所演示的逻辑。我们挑一个来解释。</p>
+
+<p>当s=ADOBECODEBANC</p>
+
+<p>i=0, j=0</p>
+
+<p>t=ABC</p>
+
+<p>大概当j=5的时候ABC的target就都被满足了，这时候就找到了指定字符。这样就只要把所有字符串
+挑短的留下来，这样就能找到最短的情况</p>
+
+<p>来算一下这个函数的时间复杂度看看</p>
+
+<p><code class="language-plaintext highlighter-rouge">has_target_char(from,to,s,t)</code>
+$ \mathcal{O}(w \times |t|) $</p>
+
+<p><code class="language-plaintext highlighter-rouge">minWindow(s,t)</code>
+$\mathcal{O}(|s| \times |t|)\times \mathcal{O}(|s|^2)$</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>01. A D O B E C 
+02. A D O B E C O 
+03. A D O B E C O D 
+04. A D O B E C O D E 
+05. A D O B E C O D E B 
+06. A D O B E C O D E B A 
+07. A D O B E C O D E B A N 
+08. A D O B E C O D E B A N C 
+09.   D O B E C O D E B A 
+10.   D O B E C O D E B A N 
+11.   D O B E C O D E B A N C 
+12.     O B E C O D E B A 
+13.     O B E C O D E B A N 
+14.     O B E C O D E B A N C 
+15.       B E C O D E B A 
+16.       B E C O D E B A N 
+17.       B E C O D E B A N C 
+18.         E C O D E B A 
+19.         E C O D E B A N 
+20.         E C O D E B A N C 
+21.           C O D E B A 
+22.           C O D E B A N 
+23.           C O D E B A N C 
+24.             O D E B A N C 
+25.               D E B A N C 
+26.                 E B A N C 
+27.                   B A N C 
+</code></pre></div></div>
+<p>想想看这个思路<strong>重复计算</strong>了什么？</p>
+
+<p>如果我们需要的是最小的串那在我们发现<strong>ADBEC</strong>后的所有串都是不需要的,但是这个方法是必须把这些串都算完才能找下一组。
+也就是说在发现一个串之后，应该立刻break当前循环，continue外层循环。</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">char</span> <span class="o">*</span><span class="nf">minWindow</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">s_len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">t_len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">s_len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">s_len</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">bool</span> <span class="n">find_string</span> <span class="o">=</span> <span class="n">has_target_char</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">find_string</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="n">print_range_str</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">s</span><span class="p">);</span>
+                                <span class="n">printf</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+                                <span class="k">break</span><span class="p">;</span>
+                        <span class="p">}</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>修改之后得出的数据明显少了很多。这样相当于只调控<strong>右边</strong>的指针让右边指针及时退出，明显
+还可以通过调整<strong>左边</strong>的指针来让数据变更少。</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. A D O B E C
+2.   D O B E C O D E B A
+3.     O B E C O D E B A
+4.       B E C O D E B A
+5.         E C O D E B A
+6.           C O D E B A
+7.             O D E B A N C
+8.               D E B A N C
+9.                 E B A N C
+10.                  B A N C
+</code></pre></div></div>
+<p>经过观察你可以发现第二次的数据的最右边都是target数组里的字符 。上图的<strong>2-6</strong>和<strong>7-10</strong>都是同一个字串的简化。所以其实同样的，在确定右边指针后就可以调整左边指针来寻找最好<em>情况</em>。</p>
+
+<p>滑动窗口，几乎要被发明出来了。</p>
+
+<h2 id="滑动窗口">滑动窗口</h2>
+
+<p>很自然的我们发现如果有一个既可以控制左边指针又能控制右边指针的算法，就能再一次简化搜索范围。</p>
+
+<h2 id="滑动窗口的算法">滑动窗口的算法</h2>
+
+<ol>
+  <li>
+    <p>首先需要left-right指针这两个指针构成我们需要的窗口。</p>
+  </li>
+  <li>
+    <p>通过循环增加right指针从而扩大窗口，直到在窗口中看到所有目标元素。</p>
+  </li>
+  <li>
+    <p>窗口包含所有目标元素后，right指针停止扩大，增加left指针，从而缩小窗口直到窗口中的字符串不符合要求</p>
+  </li>
+  <li>
+    <p>重复2.3.步骤，直到right到达字符串的末尾</p>
+  </li>
+</ol>
+
+<p>如下是我给出的一个C的方案。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">set_key</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">map</span><span class="p">,</span> <span class="kt">char</span> <span class="n">c</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="n">map</span><span class="p">[</span><span class="n">c</span> <span class="o">-</span> <span class="sc">'A'</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kr">inline</span> <span class="n">bool</span> <span class="nf">has_target_char_map</span><span class="p">(</span><span class="kt">int</span> <span class="n">from</span><span class="p">,</span> <span class="kt">int</span> <span class="n">to</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">t</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">map</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="cm">/* int map[24] = {0}; */</span>
+        <span class="c1">// test [from, to] range</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">to</span> <span class="o">&lt;</span> <span class="n">from</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(((</span><span class="n">to</span> <span class="o">-</span> <span class="n">from</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">strlen</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+                <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="n">t_len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+
+        <span class="kt">int</span> <span class="n">target_map</span><span class="p">[</span><span class="n">MAP_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">t_len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">set_key</span><span class="p">(</span><span class="n">target_map</span><span class="p">,</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+        <span class="p">}</span>
+
+        <span class="n">memset</span><span class="p">(</span><span class="n">map</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">typeof</span><span class="p">(</span><span class="n">map</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">*</span> <span class="n">MAP_SIZE</span><span class="p">);</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">from</span><span class="p">;</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">to</span><span class="p">;</span> <span class="n">n</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">strlen</span><span class="p">(</span><span class="n">t</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">==</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">{</span>
+                                <span class="n">set_key</span><span class="p">(</span><span class="n">map</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="n">n</span><span class="p">]);</span>
+                                <span class="k">break</span><span class="p">;</span>
+                        <span class="p">}</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="n">bool</span> <span class="n">res</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MAP_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">target_map</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">map</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">{</span>
+                        <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">&amp;&amp;</span> <span class="nb">true</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">&amp;&amp;</span> <span class="nb">false</span><span class="p">;</span>
+                        <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">char</span> <span class="o">*</span><span class="nf">range_str</span><span class="p">(</span><span class="kt">int</span> <span class="n">from</span><span class="p">,</span> <span class="kt">int</span> <span class="n">to</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">to</span> <span class="o">==</span> <span class="p">(</span><span class="n">len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="n">s</span> <span class="o">+</span> <span class="n">from</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">to</span><span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">s</span><span class="p">[</span><span class="n">to</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+                <span class="k">return</span> <span class="n">s</span><span class="o">+</span><span class="n">from</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="s">""</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">char</span> <span class="o">*</span><span class="nf">minWindow_opt</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">s_len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">t_len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">t_len</span> <span class="o">&gt;</span> <span class="n">s_len</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s">""</span><span class="p">;</span>
+        <span class="c1">// 这里的left和right构成了一个窗口</span>
+        <span class="kt">int</span> <span class="n">left</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">right</span> <span class="o">=</span> <span class="n">left</span><span class="p">;</span>
+
+        <span class="c1">// map负责记录当前的窗口的字符串有没有满足字符串t要求</span>
+        <span class="kt">int</span> <span class="n">map</span><span class="p">[</span><span class="n">MAP_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+        <span class="c1">// lastmap是为了记录上一个满足要求的字符串</span>
+        <span class="kt">int</span> <span class="n">last_map</span><span class="p">[</span><span class="n">MAP_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+
+        <span class="c1">// 为了记录最短的窗口</span>
+        <span class="kt">int</span> <span class="n">shortest_left</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">shortest_right</span> <span class="o">=</span> <span class="n">s_len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+        
+        <span class="c1">// 右边的指针从0的位置开始到目标s字符串结束为止</span>
+        <span class="c1">// 大多数情况right会遍历完字符串</span>
+        <span class="k">for</span> <span class="p">(;</span> <span class="n">right</span> <span class="o">&lt;</span> <span class="n">s_len</span><span class="p">;)</span> <span class="p">{</span>
+                <span class="c1">// hastargetcharmap函数判断当前的窗口是否满足字符串t的要求</span>
+                <span class="n">bool</span> <span class="n">find</span> <span class="o">=</span> <span class="n">has_target_char_map</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">map</span><span class="p">);</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">find</span><span class="p">)</span> <span class="p">{</span>
+                <span class="c1">// 如果满足要求，就需要缩小left的窗口，即left++</span>
+                        <span class="k">do</span> <span class="p">{</span>
+                            <span class="c1">// 保存这个满足要求的map到lastmap</span>
+                                <span class="n">memcpy</span><span class="p">(</span><span class="n">last_map</span><span class="p">,</span> <span class="n">map</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="o">*</span> <span class="n">MAP_SIZE</span><span class="p">);</span>
+                            <span class="c1">// 这里判断一下当前这个满足要求的窗口是不是最小的窗口</span>
+                            <span class="c1">// 如果比最小的窗口还要小那么就记录下来</span>
+                                <span class="k">if</span> <span class="p">(</span><span class="n">right</span> <span class="o">-</span> <span class="n">left</span> <span class="o">&lt;</span>
+                                    <span class="n">shortest_right</span> <span class="o">-</span> <span class="n">shortest_left</span><span class="p">)</span> <span class="p">{</span>
+                                        <span class="n">shortest_left</span> <span class="o">=</span> <span class="n">left</span><span class="p">;</span>
+                                        <span class="n">shortest_right</span> <span class="o">=</span> <span class="n">right</span><span class="p">;</span>
+                                <span class="p">}</span>
+                            <span class="c1">// 如果left==right且他们也是满足要求的字符串说明就是他们</span>
+                                <span class="k">if</span> <span class="p">(</span><span class="n">left</span> <span class="o">==</span> <span class="n">right</span><span class="p">)</span>
+                                        <span class="k">return</span> <span class="n">range_str</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">s</span><span class="p">);</span>
+                            <span class="c1">// 缩小left窗口</span>
+                                <span class="n">left</span><span class="o">++</span><span class="p">;</span>
+                            <span class="c1">// 判断缩小后的窗口是不是满足要求，如果满足就继续缩小</span>
+                        <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">has_target_char_map</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">map</span><span class="p">));</span>
+                <span class="p">}</span>
+                <span class="c1">// left缩小窗口后没有满足要求，就需要扩大窗口，直到字符串末尾</span>
+                <span class="n">right</span><span class="o">++</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">bool</span> <span class="n">res</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">strlen</span><span class="p">(</span><span class="n">t</span><span class="p">);</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">last_map</span><span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="sc">'A'</span><span class="p">]</span> <span class="o">?</span> <span class="nb">true</span> <span class="o">:</span> <span class="nb">false</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">res</span> <span class="o">?</span> <span class="n">range_str</span><span class="p">(</span><span class="n">shortest_left</span><span class="p">,</span> <span class="n">shortest_right</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="o">:</span> <span class="s">""</span><span class="p">;</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+<p>下面修改过的方案，可以发现这个方案还是没法通过leetcode最后几个test case, 这时候我们可以通过算函数的时间复杂度来判断如何修改策略。</p>
+
+<p><code class="language-plaintext highlighter-rouge">has_target_char_map(from,to,s,t,t_len,target_map)</code> $ \mathcal{O}( (to-from) \times tlen + mapsize)$
+<code class="language-plaintext highlighter-rouge">minWindow_opt(s,t)</code> $\mathcal{O}(slen) \times \mathcal{O}( (to-from) \times tlen + mapsize) $</p>
+
+<p>整体应该是  $\mathcal{O}(N \times K \times M)$</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define MAP_SIZE 128
+</span>
+<span class="cp">#define set_key(map, c) map[c - 'A'] += 1;
+</span>
+<span class="kt">int</span> <span class="nf">get_key</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">map</span><span class="p">,</span> <span class="kt">char</span> <span class="n">c</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">return</span> <span class="n">map</span><span class="p">[</span><span class="n">c</span> <span class="o">-</span> <span class="sc">'A'</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kr">inline</span> <span class="n">bool</span> <span class="nf">has_target_char_map</span><span class="p">(</span><span class="kt">int</span> <span class="n">from</span><span class="p">,</span>
+                                       <span class="kt">int</span> <span class="n">to</span><span class="p">,</span>
+                                       <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span>
+                                       <span class="kt">char</span> <span class="o">*</span><span class="n">t</span><span class="p">,</span>
+                                       <span class="kt">int</span> <span class="n">t_len</span><span class="p">,</span>
+                                       <span class="kt">int</span> <span class="o">*</span><span class="n">target_map</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="cm">/* int map[24] = {0}; */</span>
+        <span class="c1">// test [from, to] range</span>
+        <span class="kt">int</span> <span class="n">map</span><span class="p">[</span><span class="n">MAP_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">to</span> <span class="o">&lt;</span> <span class="n">from</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(((</span><span class="n">to</span> <span class="o">-</span> <span class="n">from</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">t_len</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">from</span><span class="p">;</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="n">to</span><span class="p">;</span> <span class="n">n</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">t_len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">s</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">==</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">{</span>
+                                <span class="n">set_key</span><span class="p">(</span><span class="n">map</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="n">n</span><span class="p">]);</span>
+                                <span class="k">break</span><span class="p">;</span>
+                        <span class="p">}</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="n">bool</span> <span class="n">res</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">MAP_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">target_map</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">map</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="p">{</span>
+                        <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">&amp;&amp;</span> <span class="nb">true</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">&amp;&amp;</span> <span class="nb">false</span><span class="p">;</span>
+                        <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">char</span> <span class="o">*</span><span class="nf">range_str</span><span class="p">(</span><span class="kt">int</span> <span class="n">from</span><span class="p">,</span> <span class="kt">int</span> <span class="n">to</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="kt">int</span> <span class="n">len</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">to</span> <span class="o">==</span> <span class="p">(</span><span class="n">len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="n">s</span> <span class="o">+</span> <span class="n">from</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">to</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;=</span> <span class="n">len</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">s</span><span class="p">[</span><span class="n">to</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">'\0'</span><span class="p">;</span>
+                <span class="k">return</span> <span class="n">s</span> <span class="o">+</span> <span class="n">from</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="s">""</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">char</span> <span class="o">*</span><span class="nf">minWindow_opt</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">s_len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">t_len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">t_len</span> <span class="o">&gt;</span> <span class="n">s_len</span><span class="p">)</span>
+                <span class="k">return</span> <span class="s">""</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">left</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">right</span> <span class="o">=</span> <span class="n">left</span><span class="p">;</span>
+
+
+        <span class="kt">int</span> <span class="n">shortest_left</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">shortest_right</span> <span class="o">=</span> <span class="n">INT_MAX</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="n">target_map</span><span class="p">[</span><span class="n">MAP_SIZE</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">t_len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">set_key</span><span class="p">(</span><span class="n">target_map</span><span class="p">,</span> <span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="p">(;</span> <span class="n">right</span> <span class="o">&lt;</span> <span class="n">s_len</span><span class="p">;)</span> <span class="p">{</span>
+                <span class="k">while</span> <span class="p">(</span>
+                    <span class="n">has_target_char_map</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">t_len</span><span class="p">,</span> <span class="n">target_map</span><span class="p">))</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">left</span> <span class="o">==</span> <span class="n">right</span><span class="p">)</span>
+                                <span class="k">return</span> <span class="n">range_str</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">s_len</span><span class="p">);</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">right</span> <span class="o">-</span> <span class="n">left</span> <span class="o">&lt;</span> <span class="n">shortest_right</span> <span class="o">-</span> <span class="n">shortest_left</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="n">shortest_left</span> <span class="o">=</span> <span class="n">left</span><span class="p">;</span>
+                                <span class="n">shortest_right</span> <span class="o">=</span> <span class="n">right</span><span class="p">;</span>
+                        <span class="p">}</span>
+                        <span class="n">left</span><span class="o">++</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="n">right</span><span class="o">++</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">shortest_right</span> <span class="o">==</span> <span class="n">INT_MAX</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="s">""</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"%d %d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">shortest_left</span><span class="p">,</span> <span class="n">shortest_right</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">range_str</span><span class="p">(</span><span class="n">shortest_left</span><span class="p">,</span> <span class="n">shortest_right</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">s_len</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>下面会给出一个更简单效率更高的方案，我通过分析他们的不同来写出滑动窗口需要关注的点。</p>
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">char</span> <span class="o">*</span><span class="n">minWindow_opt_2</span><span class="p">(</span><span class="n">char</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="n">char</span> <span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">need</span><span class="p">[</span><span class="m">128</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="m">0</span><span class="p">};</span>
+        <span class="kt">int</span> <span class="n">window</span><span class="p">[</span><span class="m">128</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="m">0</span><span class="p">};</span>
+        <span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">t</span><span class="p">);</span>
+
+
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">need</span><span class="p">[</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span><span class="o">++</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="o">-</span><span class="m">1</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">mi</span> <span class="o">=</span> <span class="n">m</span> <span class="o">+</span> <span class="m">1</span><span class="p">;</span>
+        <span class="c">// 这里有个关键就是怎么判断当前窗口的字符串已经是合适的字符串了</span>
+        <span class="c">// 这里使用了cnt变量来控制。</span>
+        <span class="c">// 假设 t=ABC 如果一个字符串str完全包含这三个字符，我只需要在str有相关</span>
+        <span class="c">// 字符出现的时候增加cnt的值就行了，即使存在t = AA两个字符相同，也可以通过</span>
+        <span class="c">// 判断need和window中实际字符对应的个数来判断。</span>
+        <span class="c">// </span>
+        <span class="c">// cnt更像是一个检查记录，维护这个记录就不需要像上面那个代码一样遍历整个map</span>
+        <span class="c">// </span>
+        <span class="kt">int</span> <span class="n">cnt</span> <span class="o">=</span> <span class="m">0</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="n">left</span> <span class="o">=</span> <span class="m">0</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">right</span> <span class="o">=</span> <span class="m">0</span><span class="p">;</span>
+
+        <span class="k">for</span> <span class="p">(;</span> <span class="n">right</span> <span class="o">&lt;</span> <span class="n">m</span><span class="p">;</span> <span class="n">right</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">char</span> <span class="n">c</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">right</span><span class="p">];</span>
+
+                <span class="n">window</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">++</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">window</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">need</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="p">{</span>
+                        <span class="n">cnt</span><span class="o">++</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="n">while</span> <span class="p">(</span><span class="n">cnt</span> <span class="o">==</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">((</span><span class="n">right</span> <span class="o">-</span> <span class="n">left</span> <span class="o">+</span> <span class="m">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">mi</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="n">mi</span> <span class="o">=</span> <span class="n">right</span> <span class="o">-</span> <span class="n">left</span> <span class="o">+</span> <span class="m">1</span><span class="p">;</span>
+                                <span class="n">k</span> <span class="o">=</span> <span class="n">left</span><span class="p">;</span>
+                        <span class="p">}</span>
+
+                        <span class="n">c</span> <span class="o">=</span> <span class="n">s</span><span class="p">[</span><span class="n">left</span><span class="p">];</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">window</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">need</span><span class="p">[</span><span class="n">c</span><span class="p">])</span> <span class="p">{</span>
+                                <span class="n">cnt</span><span class="o">--</span><span class="p">;</span>
+                        <span class="p">}</span>
+                        <span class="n">window</span><span class="p">[</span><span class="n">c</span><span class="p">]</span><span class="o">--</span><span class="p">;</span>
+                        <span class="n">left</span><span class="o">++</span><span class="p">;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="o">&lt;</span> <span class="m">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="s">""</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">range_str</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">k</span> <span class="o">+</span> <span class="n">mi</span><span class="o">-</span><span class="m">1</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">m</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>整体应该是  $\mathcal{O}(N \times M)$ 因为只有两个嵌套循环。
+滑动窗口是一种双指针在矩阵中的应用。</p>
+
+<p>上文我们看的滑动窗口的例子，应该着重看滑动窗口的思路如何一步步展开优化的，可以对比倒数第一个和第二个代码，
+他们的代码思路差不多，但是整体的时间复杂度完全不同。抓住问题的本质才是减少时间复杂度的关键。</p>
+
+<p>我们看一下另一个双指针应用的问题</p>
+
+<h2 id="binary_search">二分搜索</h2>
+
+<p>二分搜索是一个很容易出错也很容易理解的算法。简单来说就是通过不断寻找剩下的数据的中间值
+来搜索目标数字。</p>
+
+<p><a href="https://en.wikipedia.org/wiki/Donald_Knuth">Knuth</a>在他的<a href="https://en.wikipedia.org/wiki/The_Art_of_Computer_Programming">《计算机程序设计与艺术》</a>卷三6.2.1中提到“尽管二分查找的基本思想相当简单，但细节可能需要更强的技巧，许多优秀的程序员在最初尝试的时候，
+都有可能多次犯错。”</p>
+
+<p>既然是这样不如我们自己试试看先。既然是这样不如我们自己试试看先</p>
+
+<h2 id="leetcode-704-binary-search"><a href="https://leetcode.com/problems/binary-search/">leetcode 704 Binary Search</a></h2>
+<p>问题很简单我会提供一个我初次尝试这个问题的一个答案（这是一个错误答案）通过这个错误答案我想分析一下思考上的问题。</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">my_first_seen_search</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">nums</span><span class="p">,</span> <span class="kt">int</span> <span class="n">numsSize</span><span class="p">,</span> <span class="kt">int</span> <span class="n">target</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">numsSize</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="k">while</span> <span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="n">l</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">l</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">?</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">l</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">:</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">l</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="k">return</span> <span class="n">mid</span><span class="p">;</span>
+                        <span class="p">}</span>
+                        <span class="n">l</span> <span class="o">=</span> <span class="n">mid</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="n">r</span> <span class="o">=</span> <span class="n">mid</span><span class="p">;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>二分搜索的逻辑很简单，我来详细的描述一下</p>
+
+<ol>
+  <li>【初始化】定义两个指针left，right，left初始为0,right初始为目标集合的最后一个元素。</li>
+  <li>【找中项】中项$mid =\lfloor (left + right) \div 2 \rfloor$,我们处理的集合是一个有序集合如果寻找的元素K 在集合中必然存在$K_l \leq K \leq K_r$, 如果不存在K， 则等到 $right &lt; left$ 代表没有找到目标</li>
+  <li>【比较值】如果$K&lt; K_i$,去4, 如果$K&gt;K_i$ 去5 如果$K = K_i$ 找到。</li>
+  <li>【调整右】right = mid + 1， 并跳转到2.</li>
+  <li>【调整左】left = mid - 1， 并跳转到2.</li>
+</ol>
+
+<pre class="mermaid" style="text-align: left;">
+graph TD
+    A["1.【初始化】"] ==&gt; B["2.【找中项】"]
+    B --&gt; C["3.【比较值】"]
+    D["4.【调整右】"] ----&gt; B
+    E["5.【调整左】"] ----&gt; B
+    C --&gt; D
+    C --&gt; E
+    C -.-&gt; F["SUCCESS"]
+    B -.-&gt; G["FAILURE"]
+
+    class C,D blueNode;
+    class E,F greenNode
+    classDef blueNode fill:#aaaaff,stroke:#0000ff,stroke-width:2px;
+    classDef greenNode fill:#aaccff,stroke:#00ffff,stroke-width:2px;
+</pre>
+
+<p>结合<code class="language-plaintext highlighter-rouge">my_first_seen_search()</code> 的代码和二分搜索逻辑来反思错误的思考逻辑。</p>
+
+<p>拿到二分搜索的问题，首先就知道需要通过不断的取中值来获得目标，这样自然需要2个指针来维护一个搜索空间。然后你需要一个中间项的获取逻辑，和判断是否命中target，
+单纯只是给左右边界赋值mid会导致在某些情况没有办法缩小空间。</p>
+
+<div style="background-color:#d0e7f9; color:#4d4d4d; padding:10px; border-radius:5px;">
+  <p><strong>例子</strong></p>
+
+  <ul>
+    <li>int nums[] = {-1, 0, 3, 5, 9, 12};</li>
+    <li>int target = 2;</li>
+  </ul>
+
+  <ol>
+    <li>left=0 right=5 mid=2 nums[2]=3</li>
+    <li>left=0 right=2 mid=1 nums[1]=0</li>
+    <li>left=1 right=2 mid=1 nums[1]=0</li>
+    <li>left=1 right=2 mid=1 nums[1]=0</li>
+  </ol>
+
+</div>
+
+<p>上面的例子就显示了left right指针被被“固定”在一个地方了。首先,我们使用$\lfloor
+(left + right) \div 2 \rfloor$ 来计算mid值，二分搜索就是把当前数聚集分成偏大和偏小两种集合，
+无论选择哪个集合当前这个mid点都被判断过了所以不应该加入下一次的迭代。</p>
+
+<p>我们期待的表现应该是这样。</p>
+<div style="background-color:#d0e7f9; color:#4d4d4d; padding:10px; border-radius:5px;">
+  <ul>
+    <li>int nums[] = {-1, 0, 3, 5, 9, 12};</li>
+    <li>int target = 2;</li>
+  </ul>
+
+  <ol>
+    <li>left=0 right=1 mid=2 nums[2]=3</li>
+    <li>left=1 right=1 mid=0 nums[0]=-1</li>
+    <li>left=2 right=1 mid=1 nums[1]=0</li>
+  </ol>
+</div>
+
+<p>下面给出二分搜索的正确逻辑</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">search</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span> <span class="n">nums</span><span class="p">,</span> <span class="kt">int</span> <span class="n">numsSize</span><span class="p">,</span> <span class="kt">int</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">numsSize</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+    <span class="k">while</span> <span class="p">(</span><span class="n">r</span> <span class="o">&gt;=</span> <span class="n">l</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="n">l</span> <span class="o">+</span> <span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="n">l</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// 这里使用 l+（r-l）是为了处理加的溢出</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">mid</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span>
+
+            <span class="n">l</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>当我们完全了解如何写一个二分搜索之后，我们可以再细分的了解这个算法。为了了解二分搜索我们应该
+把这个算法执行当作一个二叉决策树。</p>
+
+<p>这是一个N=16的二叉树</p>
+<pre class="mermaid" style="text-align: left;">
+graph TD;
+    8 --&gt; 4;
+    8 --&gt; 12;
+    
+    4 --&gt; 2;
+    4 --&gt; 6;
+    12 --&gt; 10;
+    12 --&gt; 14;
+    
+    2 --&gt; 1;
+    2 --&gt; 3;
+    6 --&gt; 5;
+    6 --&gt; 7;
+    10 --&gt; 9;
+    10 --&gt; 11;
+    14 --&gt; 13;
+    14 --&gt; 15;
+    
+    1 --&gt; a["0"];
+    1 --&gt; b["1"];
+    3 --&gt; c["2"];
+    3 --&gt; d["3"];
+    5 --&gt; e["4"];
+    5 --&gt; f["5"];
+    7 --&gt; g["6"];
+    7 --&gt; h["7"];
+    9 --&gt; i["8"];
+    9 --&gt; z["9"];
+    11 --&gt; k["11"];
+    11 --&gt; l["12"];
+    13 --&gt; m["13"];
+    13 --&gt; n["14"];
+    15 --&gt; o["15"];
+    15 --&gt; q["16"];
+</pre>
+
+<p>如图你可以很直观发现，这个算法每一次选择都会减少当前集合K的一半，也就是N次选择，就会有
+$ K / 2^N $数据被排除。当成功选择到target number时候$K / 2^N = 1$ 所以 $N=log_2 K$ 所以这时候
+时间复杂度是 $\mathcal{O}(log K)$</p>
+
+<p>二分查找有他的局限性，但二分查找的分而治之的逻辑值得借鉴，类似的还有<a href="https://en.wikipedia.org/wiki/Fibonacci_sequence">斐波那契</a>查找和<a href="https://en.wikipedia.org/wiki/Interpolation_search">插值查找</a>。之后可能会
+补充说明。</p>
+
+<h2 id="二分搜索的两种变种-搜索左边界和搜索右边界">二分搜索的两种变种 搜索左边界和搜索右边界</h2>
+<p>上述的二分算法是没法处理类似{1,2,2,2,2,2,5,6}寻找“2”，这种类型的数据。</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">search_l_most</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">nums</span><span class="p">,</span> <span class="kt">int</span> <span class="n">numsSize</span><span class="p">,</span> <span class="kt">int</span> <span class="n">target</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">numsSize</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="n">l</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">l</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 这里就是右边的部分</span>
+                        <span class="n">l</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 这里是处理hit target的部分</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">mid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="k">return</span> <span class="n">mid</span><span class="p">;</span>
+                        <span class="p">}</span>
+                        <span class="kt">int</span> <span class="n">pre_mid</span> <span class="o">=</span> <span class="n">nums</span><span class="p">[</span><span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">pre_mid</span> <span class="o">==</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="n">r</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+                        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">pre_mid</span> <span class="o">&lt;</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="k">return</span> <span class="n">mid</span><span class="p">;</span>
+                        <span class="p">}</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 这里处理左边的部分</span>
+                        <span class="n">r</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>同样的逻辑你可以写出最右边的那个位置的函数。</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">search_r_most</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">nums</span><span class="p">,</span> <span class="kt">int</span> <span class="n">numsSize</span><span class="p">,</span> <span class="kt">int</span> <span class="n">target</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">l</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">numsSize</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">r</span> <span class="o">-</span> <span class="n">l</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="p">(</span><span class="n">r</span> <span class="o">+</span> <span class="n">l</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">l</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="kt">int</span> <span class="n">pre_mid</span> <span class="o">=</span> <span class="n">nums</span><span class="p">[</span><span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">pre_mid</span> <span class="o">==</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="n">l</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+                        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">pre_mid</span> <span class="o">&gt;</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="k">return</span> <span class="n">mid</span><span class="p">;</span>
+                        <span class="p">}</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">mid</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">r</span> <span class="o">=</span> <span class="n">mid</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>看完二叉查找之后我们继续对于数组的另一个处理技巧前缀和数组</p>
+
+<h2 id="前缀和数组">前缀和数组</h2>
+<h2 id="leetcode-303-range-sum-query-immutable"><a href="https://leetcode.com/problems/range-sum-query-immutable/">leetcode 303 Range Sum Query-Immutable</a></h2>
+
+<p><strong>前缀和</strong>没有什么理解上的难度，就是一组数据，计算他们前N个元素的和并记录下来。</p>
+<div class="language-lisp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">(</span><span class="nv">define</span> <span class="nv">sum_lst</span>
+  <span class="p">(</span><span class="k">lambda</span> <span class="p">(</span><span class="nv">lat</span><span class="p">)</span>
+    <span class="p">(</span><span class="nb">cond</span>
+      <span class="p">((</span><span class="nv">null?</span> <span class="nv">lat</span><span class="p">)</span> <span class="mi">0</span><span class="p">)</span>
+      <span class="p">(</span><span class="nv">else</span>
+         <span class="p">(</span><span class="nb">+</span> <span class="p">(</span><span class="nb">car</span> <span class="nv">lat</span><span class="p">)</span> <span class="p">(</span><span class="nv">sum_lst</span> <span class="p">(</span><span class="nb">cdr</span> <span class="nv">lat</span><span class="p">)))))))</span>
+</code></pre></div></div>
+
+<p>下面给出303的答案</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">sumarray</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">NumArray</span><span class="p">;</span>
+
+
+<span class="n">NumArray</span> <span class="o">*</span><span class="nf">numArrayCreate</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">nums</span><span class="p">,</span> <span class="kt">int</span> <span class="n">numsSize</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">numsSize</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="n">NumArray</span> <span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">a</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="n">a</span><span class="o">-&gt;</span><span class="n">sumarray</span> <span class="o">=</span> <span class="n">calloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="n">numsSize</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">numsSize</span><span class="o">+</span><span class="mi">1</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">a</span><span class="o">-&gt;</span><span class="n">sumarray</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="o">-&gt;</span><span class="n">sumarray</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">a</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">numArraySumRange</span><span class="p">(</span><span class="n">NumArray</span> <span class="o">*</span><span class="n">obj</span><span class="p">,</span> <span class="kt">int</span> <span class="n">left</span><span class="p">,</span> <span class="kt">int</span> <span class="n">right</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">res</span> <span class="o">=</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">sumarray</span><span class="p">[</span><span class="n">right</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">sumarray</span><span class="p">[</span><span class="n">left</span><span class="p">];</span>
+        <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">numArrayFree</span><span class="p">(</span><span class="n">NumArray</span> <span class="o">*</span><span class="n">obj</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">obj</span> <span class="o">&amp;&amp;</span> <span class="n">obj</span><span class="o">-&gt;</span><span class="n">sumarray</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">free</span><span class="p">(</span><span class="n">obj</span><span class="o">-&gt;</span><span class="n">sumarray</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">free</span><span class="p">(</span><span class="n">obj</span><span class="p">);</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>可以构造前缀和的原因是因为加法具有累加性，这种累加性可以构造一种递归结构，从而通过记录上次的值来减少重复的遍历数组。</p>
+
+<p>$prefix[i] = arr[0] + arr[1]+ … + arr[i]$</p>
+
+<p>$prefix[i] = prefix[i-1] + arr[i]$</p>
+
+<p>这样的构造方式我们只需要从左往右遍历一次数组，就可以算出每一个元素的前缀和了，这时候时间复杂度是$\mathcal{O}(N)$
+而区间的和$sum(L,R) = prefix[R] - prefix[L-1]$
+推导很简单带入上面的算式就可。这样求解区间的总和的时间复杂度是$\mathcal{O}(1)$。</p>
+
+<h2 id="前缀和的二维拓展">前缀和的二维拓展</h2>
+<h2 id="leetcode-304-range-sum-query-2d-immutable"><a href="https://leetcode.com/problems/range-sum-query-2d-immutable/description/">leetcode 304 Range Sum Query 2D-Immutable</a></h2>
+<p>二维拓展的逻辑和一维类似，这里唯一需要关心的是当预处理矩阵的时候直接遍历的复杂度是$\mathcal{O}(N)$
+而前缀和的预处理$\mathcal{O}(N)$和查询$\mathcal{O}(1)$，如果把预处理耗时也算上单次查询前缀和不一定是一个更好的选择，但是可以肯定的是，大量查询的情况下前缀和依然非常值的使用。</p>
+
+<p>这里可以学习的就是通过预先构造数据结构（preprocessed data）来避免后期重复计算类似的预处理数据结构还有差分数组，树状数组（fenwick tree），线段树（segment tree）</p>
+
+<h2 id="差分数组">差分数组</h2>
+<h2 id="leetcode-1109-corporate-flight-bookings"><a href="https://leetcode.com/problems/corporate-flight-bookings/">leetcode 1109 corporate flight bookings</a></h2>
+
+<p>这个题目很容易就能想到一个时间复杂度为 $\mathcal{O}(N \times (end-start))$ 的算法，如下。</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="o">*</span><span class="nf">corpFlightBookings</span><span class="p">(</span><span class="kt">int</span> <span class="o">**</span><span class="n">bookings</span><span class="p">,</span>
+                        <span class="kt">int</span> <span class="n">bookingsSize</span><span class="p">,</span>
+                        <span class="kt">int</span> <span class="o">*</span><span class="n">bookingsColSize</span><span class="p">,</span>
+                        <span class="kt">int</span> <span class="n">n</span><span class="p">,</span>
+                        <span class="kt">int</span> <span class="o">*</span><span class="n">returnSize</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">res</span> <span class="o">=</span> <span class="n">calloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">),</span> <span class="p">(</span><span class="o">*</span><span class="n">returnSize</span><span class="p">));</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">res</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">bookingsSize</span><span class="p">;</span> <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kt">int</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+                <span class="kt">int</span> <span class="o">*</span><span class="n">entry</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">bookings</span> <span class="o">+</span> <span class="n">pos</span><span class="p">);</span>
+                <span class="kt">int</span> <span class="n">start</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+                <span class="kt">int</span> <span class="n">end</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+                <span class="kt">int</span> <span class="n">value</span> <span class="o">=</span> <span class="n">entry</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+
+                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">start</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="n">end</span><span class="p">;</span> <span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="n">res</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span><span class="p">;</span>
+                        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                                <span class="n">res</span><span class="p">[</span><span class="n">j</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">value</span><span class="p">;</span>
+                        <span class="p">}</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">entry1</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">10</span><span class="p">};</span>
+        <span class="kt">int</span> <span class="n">entry2</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">};</span>
+        <span class="kt">int</span> <span class="n">entry3</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">25</span><span class="p">};</span>
+
+        <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">bookings</span><span class="p">[])[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="o">&amp;</span><span class="n">entry1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">entry2</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">entry3</span> <span class="p">};</span>
+        <span class="kt">int</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">csize</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">m</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">rsize</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">n</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">res</span> <span class="o">=</span> <span class="n">corpFlightBookings</span><span class="p">((</span><span class="kt">int</span> <span class="o">**</span><span class="p">)</span> <span class="n">bookings</span><span class="p">,</span> <span class="n">ARRAY_SIZE</span><span class="p">(</span><span class="n">bookings</span><span class="p">),</span>
+                                      <span class="n">csize</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">rsize</span><span class="p">);</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">printf</span><span class="p">(</span><span class="s">"%d "</span><span class="p">,</span> <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+        <span class="p">}</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>如果构造一个差分数组就可以在$\mathcal{O}(1)$时间内处理了。</p>
+
+<p>差分数组是前缀和的逆运算, 差分数组记录了相邻元素的变化，通过对D进行前缀和累加，就可以恢复原始数组A</p>
+
+<p>$diff[i] = arr[i] - arr[i-1]$</p>
+
+<p>$arr[i] = arr[i-1] + diff[i]$</p>
+
+<p>考虑到差分数组需要前缀和才能恢复原来数据，所以差分数组分为两个时间复杂度，更新$\mathcal{O}(1)$
+还原 $\mathcal{O}(N)$ 但是直接修改是 $\mathcal{O}(N \times M)$, 所以差分数组在计算区域位置的增量更新有效率的。</p>
+
+<p>为什么只需要改两头而不需要处理中间的情况，其实关键在于还原的操作，还原操作是前一项和差分数组的和，所以只要
+改第一个就会一直影响到后面，这也说明了为什么需要在right+1处还原增量。</p>
+
+<p>我随便给一个演示</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp"># 原始数组
+</span><span class="n">A</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">11</span><span class="p">]</span>
+<span class="cp"># 差分数组
+</span><span class="n">D</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="err">#</span> <span class="err">额外加一个</span> <span class="mi">0</span> <span class="err">以便处理边界</span>
+
+<span class="cp"># 假设我们要对区间 [2, 4] (即 A[2] 到 A[4]) 进行 +3 操作
+</span><span class="n">L</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span>
+<span class="n">D</span><span class="p">[</span><span class="n">L</span><span class="p">]</span> <span class="o">+=</span> <span class="n">x</span>  <span class="err">#</span> <span class="n">D</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">3</span>
+<span class="n">D</span><span class="p">[</span><span class="n">R</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-=</span> <span class="n">x</span>  <span class="err">#</span> <span class="n">D</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">3</span>
+
+<span class="cp"># 通过前缀和恢复修改后的 A
+</span><span class="k">for</span> <span class="n">i</span> <span class="n">in</span> <span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">len</span><span class="p">(</span><span class="n">A</span><span class="p">))</span><span class="o">:</span>
+    <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">D</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+</code></pre></div></div>
+<h2 id="后">后</h2>
+
+<p>这周处理了滑动窗口，二分搜索和一些数据预处理的技巧。下周是树的相关</p>
+
+<p>Fri Mar  7 05:51:30 PM CST 2025</p>
+
+
+</article>
+
+<div class="page-navigation">
+	
+    <a class="next" href="https://niclas3.github.io/a-rts_w4_data_structions3" title="NEXT: [A]RTS 数据结构的基石3">&lt;&lt;</a>
+		<span> &middot; </span>
+  
+		<a class="home" href="https://niclas3.github.io" title="Back to Homepage">Home</a>
+  
+		<span> &middot; </span>
+    <a class="prev" href="https://niclas3.github.io/art-s-w2_the_end_of_programming_as_we_know_it" title="PREV: [Share]就像我们知道的一样编程被AI终结了 ">&gt;&gt;</a>
+  
+</div>
+
+		</main>
+
+		<div class="footer">
+  <span class="block">😝 <a href="/" title="">曰 朝三而暮四 众狙皆怒 然则朝四而暮三 众狙皆悦</a> by <a href="http://niclas3.github.io">M</a>.</span>
+  <span class="block">&copy; 2025 niclas</span>
+</div>
+
+
+	</body>
+
+</html>

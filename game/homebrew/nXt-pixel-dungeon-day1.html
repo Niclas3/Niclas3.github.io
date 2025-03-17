@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+	<title>nXt-pixel-dungeon-day1 · 朝四暮三</title>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body, {
+          delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false}
+          ]
+      });
+  });
+</script>
+
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: true });
+</script>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="nXt-pixel-dungeon-day1" />
+<meta name="twitter:description" content="Day 1">
+
+<meta name="description" content="Day 1">
+
+
+
+<link rel="icon" href="https://niclas3.github.io/assets/favicon.png">
+<link rel="apple-touch-icon" href="https://niclas3.github.io/assets/touch-icon.png">
+<link rel="stylesheet" href="https://niclas3.github.io/assets/core.css">
+<link rel="canonical" href="https://niclas3.github.io/game/homebrew/nXt-pixel-dungeon-day1">
+<link rel="alternate" type="application/atom+xml" title="朝四暮三" href="https://niclas3.github.io/feed.xml" />
+
+
+
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga( 'create', '', 'auto' );
+		ga( 'send', 'pageview' );
+	</script>
+
+
+
+
+
+
+
+	</head>
+
+	<body>
+                <a href="/about">About</a>
+		<aside class="logo">
+
+	
+
+	<a href="/">
+            <img src="/assets/headImg.png" class="gravatar">
+	</a>
+	<span class="logo-prompt">Back to Home</span>
+
+</aside>
+
+
+		<main>
+			<article>
+
+	<div class="center">
+		<h1>nXt-pixel-dungeon-day1</h1>
+		<time>February 9, 2023</time>
+	</div>
+
+	<div class="divider"></div>
+
+	<p>Day 1</p>
+
+<p>Recently, I’ve been unable to stop playing the RPG game “Shattered Pixel Dungeon” ([SPD]). It’s a rogue-like game where you play as a hero (with four different occupations) exploring the secrets of a dungeon. The game has a port for the <a href="https://github.com/00-Evan/shattered-pixel-dungeon">switch platform</a>, but I want to create a new version specifically for the switch that includes more Joycon features.</p>
+
+<p>I don’t have any experience in game development, so this will be a challenge for me. But as the saying goes, a good beginning is half the battle, so I’ll start by listing some goals for version 0.1:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>A single hero class: Warrior
+No audio
+One original boss
+</code></pre></div></div>
+
+<p>[SPD] is an open-source game and its code can be obtained from Github. It’s based on the source code of <a href="https://github.com/00-Evan/pixel-dungeon-gradle">Pixel Dungeon</a> by <a href="https://pixeldungeon.tumblr.com/">Watabou</a> and both games were written using the Java library <a href="https://libgdx.com">libgdx</a>. However, I want to practice my C programming skills, so I plan to rewrite the game using C and release it on the <a href="https://github.com/00-Evan/shattered-pixel-dungeon">switch platform</a>.</p>
+
+<p>After a long search, I couldn’t find a good C-based library for the homebrew <a href="https://github.com/00-Evan/shattered-pixel-dungeon">switch platform</a> that is similar to <a href="https://libgdx.com">libgdx</a>. If you have any suggestions, please let me know. I have chosen to use a 2D vector drawing library on top of OpenGL, named <a href="https://github.com/memononen/nanovg">nanovg</a>, for the UI and visualizations.</p>
+
+
+
+</article>
+
+<div class="page-navigation">
+	
+    <a class="next" href="https://niclas3.github.io/game/homebrew/nXt-pixel-dungeon-day2" title="NEXT: nXt-pixel-dungeon-day2">&lt;&lt;</a>
+		<span> &middot; </span>
+  
+		<a class="home" href="https://niclas3.github.io" title="Back to Homepage">Home</a>
+  
+		<span> &middot; </span>
+    <a class="prev" href="https://niclas3.github.io/share/lasay/%E9%A3%8E%E6%9A%B4%E8%88%AC%E7%9A%84%E9%AD%94%E5%A5%B3" title="PREV: 风暴般的魔女">&gt;&gt;</a>
+  
+</div>
+
+		</main>
+
+		<div class="footer">
+  <span class="block">😝 <a href="/" title="">曰 朝三而暮四 众狙皆怒 然则朝四而暮三 众狙皆悦</a> by <a href="http://niclas3.github.io">M</a>.</span>
+  <span class="block">&copy; 2025 niclas</span>
+</div>
+
+
+	</body>
+
+</html>

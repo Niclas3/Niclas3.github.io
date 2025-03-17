@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+	<title>[A]RTS 数据结构的基石3 · 朝四暮三</title>
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.15.2/dist/contrib/auto-render.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      renderMathInElement(document.body, {
+          delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false}
+          ]
+      });
+  });
+</script>
+
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+mermaid.initialize({ startOnLoad: true });
+</script>
+
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:site" content="@" />
+<meta name="twitter:title" content="[A]RTS 数据结构的基石3" />
+<meta name="twitter:description" content="树与递归">
+
+<meta name="description" content="树与递归">
+
+
+
+<link rel="icon" href="https://niclas3.github.io/assets/favicon.png">
+<link rel="apple-touch-icon" href="https://niclas3.github.io/assets/touch-icon.png">
+<link rel="stylesheet" href="https://niclas3.github.io/assets/core.css">
+<link rel="canonical" href="https://niclas3.github.io/a-rts_w4_data_structions3">
+<link rel="alternate" type="application/atom+xml" title="朝四暮三" href="https://niclas3.github.io/feed.xml" />
+
+
+
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+		ga( 'create', '', 'auto' );
+		ga( 'send', 'pageview' );
+	</script>
+
+
+
+
+
+
+
+	</head>
+
+	<body>
+                <a href="/about">About</a>
+		<aside class="logo">
+
+	
+
+	<a href="/">
+            <img src="/assets/headImg.png" class="gravatar">
+	</a>
+	<span class="logo-prompt">Back to Home</span>
+
+</aside>
+
+
+		<main>
+			<article>
+
+	<div class="center">
+		<h1>[A]RTS 数据结构的基石3</h1>
+		<time>March 8, 2025</time>
+	</div>
+
+	<div class="divider"></div>
+
+	<h2 id="树与递归">树与递归</h2>
+
+<p>我们在<a href="/a-rts_w2_data_structions">基石1</a>和<a href="a-rts_w3_data_structions2">基石2</a>中探讨了线性结构链表和数组，这周开始讨论一种非线性结构<strong>树</strong>。</p>
+
+<p>树结构是结点之间的“分支”关系，就像树🌲从芽点发出新的枝干一样。</p>
+
+<p>树的<strong>形式化定义</strong>是具有<strong>一个或多个</strong>结点的有限集合$T$，使得</p>
+<ul>
+  <li>有一个作为树根的特定结点$root$。</li>
+  <li>剩下的结点，被划分结点$m \gt =0$个不相交的集合$T_i…T_m$，并且这个集合中的每一个都是树，并且这些
+结点$T_i…T_m$被称为根的子树。</li>
+</ul>
+
+<p>上述定义可以得到一些关于<strong>树的性质</strong>。</p>
+<ol>
+  <li>树的每一个结点都是包含在树中的某棵子树的根</li>
+  <li>一个结点的子树个数称之为这个结点的<strong>度（degree）</strong></li>
+  <li><strong>度为零</strong>的结点是这个树的<strong>叶子结点（leaf）</strong>或者<strong>终端结点（terminal node）</strong></li>
+  <li><strong>非叶子结点</strong>的被称之为<strong>分支结点（branch node）</strong></li>
+  <li>一颗树的<strong>层</strong>，<strong>root结点为第0层</strong>，其他结点都比包含它的结点的root子树对应的层大一</li>
+</ol>
+
+<p>树的表达方式有很多，这篇文章会使用传统<strong>根在上叶子在下</strong>的方式绘制图像，也会提出一种<strong>嵌套括号</strong>的代码表示方式。</p>
+
+<pre class="mermaid" style="text-align: center;">
+graph TD
+    A ---&gt; B
+    A ---&gt; C
+    B --&gt; E
+    B --&gt; D
+    C --&gt; F
+    C --&gt; G
+    C --&gt; H
+    G --&gt; I
+
+    class C,D blueNode;
+    class E,F greenNode
+    classDef blueNode fill:#aaaaff,stroke:#0000ff,stroke-width:2px;
+    classDef greenNode fill:#aaccff,stroke:#00ffff,stroke-width:2px;
+</pre>
+
+<h2 id="二叉树">二叉树</h2>
+<p><strong>二叉树</strong>是我们主要关注的树结构。在二叉树中，每个结点最多有两颗子树，在只有一颗子树的时候需要区分左右子树。
+二叉树的结点可以是一个<strong>有限集合</strong>，这个集合可以是<strong>空集</strong>。二叉树由一个根结点和两棵作为该根结点的左右子树的二叉树（这两个二叉树不相交）</p>
+
+<p>二叉树并不是树的特殊情况，而是一种完全不同的概念。</p>
+
+<p>二叉树的一些<strong>性质</strong></p>
+<ol>
+  <li>二叉树可以是一个空集</li>
+  <li>二叉树同样的集合，也可以因为左右子树位置不同而不是同样的二叉树</li>
+</ol>
+
+<p>如下使用一种字符串表达方式来表示二叉树，之后我会在代码中使用这样的方式创建实验数据</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">char</span> <span class="o">*</span><span class="n">str</span> <span class="o">=</span> <span class="s">"5(4(2,3),7(0,9(8,10)))"</span><span class="p">;</span>
+</code></pre></div></div>
+<h2 id="二叉树遍历">二叉树遍历</h2>
+<p>非常多的算法都需要走遍一棵树，不多不少的遍历树的每一个结点有3种方案，前、中、后序遍历,
+遍历方案让我们可以在谈论一棵树的结点的时候可以通过上一个和下一个结点来讨论。</p>
+
+<p>这里有个可以强调的地方二叉树的x序遍历的x代表的是<strong>根结点</strong>被遍历的顺序，前则是先遍历根，依次是中间遍历根和最后遍历根。左右子树的遍历从来都是先左后右。</p>
+<h2 id="前序遍历preorder">前序遍历（preorder）</h2>
+
+<p>先访问根结点，遍历左子树，遍历右子树</p>
+<h2 id="中序遍历inorder">中序遍历（inorder）</h2>
+<p>先访问左子树，访问根，遍历右子树</p>
+<h2 id="后序遍历postorder">后序遍历（postorder）</h2>
+<p>先访问左子树，遍历右边子树，访问根</p>
+
+<h2 id="层序遍历">层序遍历</h2>
+<p>层序遍历是通过一个队列或者栈的数据结构来跟踪每层的结点，我在下面的题目里也会用到类似的手段</p>
+
+<hr />
+
+<h1 id="大概了解树和二叉树后我们来通过几个题目看看怎么处理树的问题">大概了解树和二叉树后我们来通过几个题目看看怎么处理树的问题</h1>
+
+<h2 id="leetcode-226-反转二叉树"><a href="https://leetcode.com/problems/invert-binary-tree/">leetcode 226 反转二叉树</a></h2>
+<p>这代码非常简单，只是在后序遍历的基础上递归的替换左右子树的位置。</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">node_t</span> <span class="o">*</span><span class="nf">invertTree</span><span class="p">(</span><span class="n">node_t</span> <span class="o">*</span><span class="n">root</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">root</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">node_t</span> <span class="o">*</span><span class="n">left</span>  <span class="o">=</span> <span class="n">invertTree</span><span class="p">(</span><span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">);</span>
+
+        <span class="n">node_t</span> <span class="o">*</span><span class="n">right</span> <span class="o">=</span> <span class="n">invertTree</span><span class="p">(</span><span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">);</span>
+
+        <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="n">right</span><span class="p">;</span>
+        <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="n">left</span><span class="p">;</span>
+
+        <span class="k">return</span> <span class="n">root</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>如果你对这个代码有疑惑你可能需要了解一下关于递归的事情。</p>
+
+<h2 id="leetcode-116-populating-net-right-pointers-in-each-node"><a href="https://leetcode.com/problems/populating-next-right-pointers-in-each-node/description/">leetcode 116 Populating Net Right Pointers in Each Node</a></h2>
+<p>我们继续解这个问题。
+这个题目的难度也不是很大，题目要求我们保持前序遍历的顺序。自然可以想到使用前序遍历的逻辑先遍历整个树。
+<img src="/assets/20250314_leetcode116.jpg" alt="tree" />
+题目要求构造一棵新的树，很自然的就能注意到，给出的函数签名是没法使用的。这时候可以思考一下这个问题是不是一个递归子问题，
+一棵树想要flatten，就等于这个棵树的左子树的flatten连接右子树的flatten就好了。</p>
+
+<p>所以这个问题是有递归子问题的，当碰到叶子结点的时候就返回结点本身并停止递归。
+我如下代码就是基于如此概念写下来的。</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">node_t</span> <span class="o">*</span><span class="nf">connect</span><span class="p">(</span><span class="n">node_t</span> <span class="o">*</span><span class="n">node1</span><span class="p">,</span> <span class="n">node_t</span> <span class="o">*</span><span class="n">node2</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">node1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="n">node2</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">node2</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="n">node1</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">node1</span> <span class="o">&amp;&amp;</span> <span class="n">node2</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">node_t</span> <span class="o">*</span><span class="n">curr</span> <span class="o">=</span> <span class="n">node1</span><span class="p">;</span>
+                <span class="k">while</span> <span class="p">(</span><span class="n">curr</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">)</span>
+                        <span class="n">curr</span> <span class="o">=</span> <span class="n">curr</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">;</span>
+                <span class="n">curr</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="n">node2</span><span class="p">;</span>
+                <span class="k">return</span> <span class="n">node1</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">node_t</span> <span class="o">*</span><span class="nf">flatten_tree</span><span class="p">(</span><span class="n">node_t</span> <span class="o">*</span><span class="n">root</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">root</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">node_t</span> <span class="o">*</span><span class="n">left</span> <span class="o">=</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">;</span>
+        <span class="n">node_t</span> <span class="o">*</span><span class="n">right</span> <span class="o">=</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">left</span> <span class="o">||</span> <span class="n">right</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="n">connect</span><span class="p">(</span><span class="n">flatten_tree</span><span class="p">(</span><span class="n">left</span><span class="p">),</span> <span class="n">flatten_tree</span><span class="p">(</span><span class="n">right</span><span class="p">));</span>
+                <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">root</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">flatten</span><span class="p">(</span><span class="n">node_t</span> <span class="o">*</span><span class="n">root</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">root</span><span class="p">)</span>
+                <span class="k">return</span><span class="p">;</span>
+        <span class="n">flatten_tree</span><span class="p">(</span><span class="n">root</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>了解了这一种解法，我们一起看一下别的解法</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">flatten</span><span class="p">(</span><span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="n">root</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="p">{</span>
+        <span class="cm">/* Move the left node to the right node */</span>
+        <span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">;</span>
+        <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">;</span>
+        <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="n">node</span> <span class="o">=</span> <span class="n">root</span><span class="p">;</span>
+        
+        <span class="cm">/* Move to the end of the prev left node which is the new right node */</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="cm">/* Append the right node to its end */</span>
+        <span class="n">node</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+        
+        <span class="n">flatten</span><span class="p">(</span><span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">);</span> 
+    <span class="p">}</span>
+    <span class="k">return</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>这个解法的逻辑和我上文的写法差不多，我上文的写法很清楚。</p>
+
+<p>下一个解法</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">Stack</span>
+<span class="p">{</span>
+    <span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="n">arr</span><span class="p">[</span><span class="mi">2000</span><span class="p">];</span>
+    <span class="kt">int</span> <span class="n">top</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">void</span> <span class="nf">push</span><span class="p">(</span><span class="k">struct</span> <span class="n">Stack</span><span class="o">*</span> <span class="n">s</span><span class="p">,</span> <span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="n">node</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">s</span><span class="o">-&gt;</span><span class="n">arr</span><span class="p">[</span><span class="o">++</span><span class="p">(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">top</span><span class="p">)]</span> <span class="o">=</span> <span class="n">node</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="nf">pop</span><span class="p">(</span><span class="k">struct</span> <span class="n">Stack</span><span class="o">*</span> <span class="n">s</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">arr</span><span class="p">[(</span><span class="n">s</span><span class="o">-&gt;</span><span class="n">top</span><span class="p">)</span><span class="o">--</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">stackNodes</span><span class="p">(</span><span class="k">struct</span> <span class="n">Stack</span><span class="o">*</span> <span class="n">s</span><span class="p">,</span> <span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="n">root</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">root</span><span class="o">==</span><span class="nb">NULL</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="n">push</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">root</span><span class="p">);</span>
+    <span class="n">stackNodes</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">);</span>
+    <span class="n">stackNodes</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">flatten</span><span class="p">(</span><span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="n">root</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">root</span><span class="o">==</span><span class="nb">NULL</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">Stack</span> <span class="n">s</span><span class="p">;</span>
+    <span class="n">s</span><span class="p">.</span><span class="n">top</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="n">stackNodes</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="p">,</span> <span class="n">root</span><span class="p">);</span>
+    <span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="n">curr</span> <span class="o">=</span> <span class="n">pop</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="p">);</span>
+    <span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="n">curr</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="n">curr</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="k">while</span><span class="p">((</span><span class="n">s</span><span class="p">.</span><span class="n">top</span><span class="p">)</span><span class="o">&gt;-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">temp</span> <span class="o">=</span> <span class="n">curr</span><span class="p">;</span>
+        <span class="n">curr</span> <span class="o">=</span> <span class="n">pop</span><span class="p">(</span><span class="o">&amp;</span><span class="n">s</span><span class="p">);</span>
+        <span class="n">curr</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="n">curr</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>这个逻辑简单说就是使用前序遍历把树的结点放入栈中，然后压出栈来处理。其实无论是第一种还是第二种情况都是一种隐式的使用
+栈的，他们使用的是调用栈来保存信息。所以这三者看似不同其实核心逻辑几乎相同。</p>
+
+<h2 id="leetcode-654-maximum-binary-tree"><a href="https://leetcode.com/problems/maximum-binary-tree/description/">leetcode 654 Maximum Binary tree</a></h2>
+<p>这个很简单，没什么需要聊的，处理好左右子树就可以递归的解决了。</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">find_bigest</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">nums</span><span class="p">,</span> <span class="kt">int</span> <span class="n">numsSize</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">big_index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">numsSize</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">nums</span><span class="p">[</span><span class="n">big_index</span><span class="p">])</span> <span class="p">{</span>
+                        <span class="n">big_index</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">big_index</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">node_t</span> <span class="o">*</span><span class="nf">constructMaximumBinaryTree</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">nums</span><span class="p">,</span> <span class="kt">int</span> <span class="n">numsSize</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">numsSize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="n">find_bigest</span><span class="p">(</span><span class="n">nums</span><span class="p">,</span> <span class="n">numsSize</span><span class="p">);</span>
+        <span class="n">node_t</span> <span class="o">*</span><span class="n">res</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">node_t</span><span class="p">));</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">val</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+        <span class="o">*</span><span class="n">val</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span> <span class="n">nums</span><span class="p">[</span><span class="n">index</span><span class="p">];</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">numsSize</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">res</span><span class="o">-&gt;</span><span class="n">value</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+                <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="kt">int</span> <span class="o">*</span><span class="n">left_nums</span> <span class="o">=</span> <span class="n">nums</span><span class="p">;</span>
+                <span class="kt">int</span> <span class="n">left_size</span> <span class="o">=</span> <span class="n">index</span><span class="p">;</span>
+                <span class="kt">int</span> <span class="o">*</span><span class="n">right_nums</span> <span class="o">=</span> <span class="n">nums</span> <span class="o">+</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+                <span class="kt">int</span> <span class="n">right_size</span> <span class="o">=</span> <span class="n">numsSize</span> <span class="o">-</span> <span class="n">left_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+                <span class="n">res</span><span class="o">-&gt;</span><span class="n">value</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+                <span class="n">res</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="n">constructMaximumBinaryTree</span><span class="p">(</span><span class="n">left_nums</span><span class="p">,</span> <span class="n">left_size</span><span class="p">);</span>
+                <span class="n">res</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="n">constructMaximumBinaryTree</span><span class="p">(</span><span class="n">right_nums</span><span class="p">,</span> <span class="n">right_size</span><span class="p">);</span>
+
+                <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+        <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>下面是更快的算法。我们试着分析一下，</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="nf">constructMaximumBinaryTree</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span> <span class="n">nums</span><span class="p">,</span> <span class="kt">int</span> <span class="n">numsSize</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="n">root</span> <span class="o">=</span> <span class="n">calloc</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">TreeNode</span><span class="p">));</span>
+    <span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="n">curr</span> <span class="o">=</span> <span class="n">root</span> <span class="p">;</span>
+
+    <span class="n">root</span><span class="o">-&gt;</span><span class="n">val</span> <span class="o">=</span> <span class="o">*</span><span class="n">nums</span><span class="p">;</span>
+    <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+    <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">numsSize</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">val</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="n">nums</span> <span class="o">+</span> <span class="n">i</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">val</span> <span class="o">&gt;</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">val</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="n">node</span> <span class="o">=</span> <span class="n">calloc</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">TreeNode</span><span class="p">));</span>
+            <span class="n">node</span><span class="o">-&gt;</span><span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+            <span class="n">node</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="n">root</span><span class="p">;</span>
+            <span class="n">node</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+            <span class="n">root</span> <span class="o">=</span> <span class="n">node</span><span class="p">;</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">bool</span> <span class="n">updated</span> <span class="o">=</span> <span class="nb">false</span><span class="p">;</span>
+            <span class="n">curr</span> <span class="o">=</span> <span class="n">root</span><span class="p">;</span>
+            <span class="k">while</span> <span class="p">(</span><span class="n">curr</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">val</span> <span class="o">&gt;</span> <span class="n">curr</span><span class="o">-&gt;</span><span class="n">right</span><span class="o">-&gt;</span><span class="n">val</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="n">node</span> <span class="o">=</span> <span class="n">calloc</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">TreeNode</span><span class="p">));</span>
+                    <span class="n">node</span><span class="o">-&gt;</span><span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+                    <span class="n">node</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="n">curr</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">;</span>
+                    <span class="n">node</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+                    <span class="n">curr</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="n">node</span><span class="p">;</span>
+                    <span class="n">updated</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                    <span class="n">curr</span> <span class="o">=</span> <span class="n">curr</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">;</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">updated</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">struct</span> <span class="n">TreeNode</span><span class="o">*</span> <span class="n">node</span> <span class="o">=</span> <span class="n">calloc</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">TreeNode</span><span class="p">));</span>
+                <span class="n">node</span><span class="o">-&gt;</span><span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="p">;</span>
+                <span class="n">node</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+                <span class="n">node</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+                <span class="n">curr</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="n">node</span><span class="p">;</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">root</span><span class="p">;</span>
+
+<span class="p">}</span>
+</code></pre></div></div>
+<h2 id="leetcode-105-construct-binary-tree-from-preorder-and-inorder-traversal"><a href="https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/">leetcode 105 Construct Binary Tree from Preorder and Inorder Traversal</a></h2>
+<p>这题很有趣，通过前序遍历和中序遍历，感受不同种遍历的位置关系存储的不同。</p>
+<ol>
+  <li>为什么单一遍历的串没法唯一的返回一个树?</li>
+  <li>前序遍历和中序遍历有什么特点?</li>
+</ol>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">node_t</span> <span class="o">*</span><span class="nf">buildTree</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">preorder</span><span class="p">,</span>
+                  <span class="kt">int</span> <span class="n">preorderSize</span><span class="p">,</span>
+                  <span class="kt">int</span> <span class="o">*</span><span class="n">inorder</span><span class="p">,</span>
+                  <span class="kt">int</span> <span class="n">inorderSize</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">preorderSize</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">node_t</span> <span class="o">*</span><span class="n">last_node</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="n">node_t</span> <span class="o">*</span><span class="n">root</span> <span class="o">=</span> <span class="n">calloc</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">node_t</span><span class="p">));</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">rval</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+        <span class="o">*</span><span class="n">rval</span> <span class="o">=</span> <span class="n">preorder</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+        <span class="n">root</span><span class="o">-&gt;</span><span class="n">value</span> <span class="o">=</span> <span class="n">rval</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">inorderSize</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">inorder</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="o">*</span><span class="n">rval</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">index</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+                        <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">l_preo</span> <span class="o">=</span> <span class="n">preorder</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">l_preo_sz</span> <span class="o">=</span> <span class="n">index</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="o">*</span><span class="n">r_preo</span> <span class="o">=</span> <span class="n">preorder</span> <span class="o">+</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">r_preo_sz</span> <span class="o">=</span> <span class="n">preorderSize</span> <span class="o">-</span> <span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="o">*</span><span class="n">r_inordero</span> <span class="o">=</span> <span class="n">inorder</span> <span class="o">+</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">r_inorder_sz</span> <span class="o">=</span> <span class="n">inorderSize</span> <span class="o">-</span> <span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="n">buildTree</span><span class="p">(</span><span class="n">l_preo</span><span class="p">,</span> <span class="n">l_preo_sz</span><span class="p">,</span> <span class="n">inorder</span><span class="p">,</span> <span class="n">index</span><span class="p">);</span>
+        <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="n">buildTree</span><span class="p">(</span><span class="n">r_preo</span><span class="p">,</span> <span class="n">r_preo_sz</span><span class="p">,</span> <span class="n">r_inordero</span><span class="p">,</span> <span class="n">r_inorder_sz</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">root</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="leetcode_106-construct-binary-tree-from-inorder-and-postorder-traversal">[leetcode_106 Construct Binary Tree from Inorder and Postorder Traversal]<a href="https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/"></a></h2>
+<p>这道题是用后序遍历和中序遍历来构造，逻辑差不多，三种遍历构造结束之后会一起说。</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">node_t</span> <span class="o">*</span><span class="nf">buildTree</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">inorder</span><span class="p">,</span>
+                  <span class="kt">int</span> <span class="n">inorderSize</span><span class="p">,</span>
+                  <span class="kt">int</span> <span class="o">*</span><span class="n">postorder</span><span class="p">,</span>
+                  <span class="kt">int</span> <span class="n">postorderSize</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">inorderSize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="n">node_t</span> <span class="o">*</span><span class="n">root</span> <span class="o">=</span> <span class="n">calloc</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">node_t</span><span class="p">));</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">valp</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+        <span class="o">*</span><span class="n">valp</span> <span class="o">=</span> <span class="n">postorder</span><span class="p">[</span><span class="n">postorderSize</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+        <span class="n">root</span><span class="o">-&gt;</span><span class="n">value</span> <span class="o">=</span> <span class="n">valp</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">inorderSize</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">inorder</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="o">*</span><span class="n">valp</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">index</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+                        <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">r_in</span> <span class="o">=</span> <span class="n">inorder</span> <span class="o">+</span> <span class="p">(</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">r_insz</span> <span class="o">=</span> <span class="n">inorderSize</span> <span class="o">-</span> <span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="o">*</span><span class="n">r_post</span> <span class="o">=</span> <span class="n">postorder</span> <span class="o">+</span> <span class="n">index</span> <span class="p">;</span>
+        <span class="kt">int</span> <span class="n">r_postsz</span> <span class="o">=</span> <span class="n">postorderSize</span> <span class="o">-</span> <span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="o">*</span><span class="n">l_in</span> <span class="o">=</span> <span class="n">inorder</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">l_insz</span> <span class="o">=</span> <span class="n">index</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="o">*</span><span class="n">l_post</span> <span class="o">=</span> <span class="n">postorder</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">l_postsz</span> <span class="o">=</span> <span class="n">index</span><span class="p">;</span>
+        <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="n">buildTree</span><span class="p">(</span><span class="n">r_in</span><span class="p">,</span> <span class="n">r_insz</span><span class="p">,</span> <span class="n">r_post</span><span class="p">,</span> <span class="n">r_postsz</span><span class="p">);</span>
+        <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="n">buildTree</span><span class="p">(</span><span class="n">l_in</span><span class="p">,</span> <span class="n">l_insz</span><span class="p">,</span> <span class="n">l_post</span><span class="p">,</span> <span class="n">l_postsz</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">root</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<h2 id="leetcode-889-construct-binary-tree-from-preorder-and-postorder-traversal"><a href="https://leetcode.com/problems/construct-binary-tree-from-preorder-and-postorder-traversal/">leetcode 889 Construct Binary Tree from Preorder and postorder Traversal</a></h2>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">node_t</span> <span class="o">*</span><span class="nf">constructFromPrePost</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">preorder</span><span class="p">,</span>
+                             <span class="kt">int</span> <span class="n">preorderSize</span><span class="p">,</span>
+                             <span class="kt">int</span> <span class="o">*</span><span class="n">postorder</span><span class="p">,</span>
+                             <span class="kt">int</span> <span class="n">postorderSize</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">postorderSize</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="n">node_t</span> <span class="o">*</span><span class="n">root</span> <span class="o">=</span> <span class="n">calloc</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">node_t</span><span class="p">));</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">valp</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+        <span class="o">*</span><span class="n">valp</span> <span class="o">=</span> <span class="n">postorder</span><span class="p">[</span><span class="n">postorderSize</span> <span class="o">-</span> <span class="mi">1</span><span class="p">];</span>
+        <span class="n">root</span><span class="o">-&gt;</span><span class="n">value</span> <span class="o">=</span> <span class="n">valp</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">postorderSize</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+                <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+                <span class="k">return</span> <span class="n">root</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="kt">int</span> <span class="n">right_val</span> <span class="o">=</span> <span class="n">postorder</span><span class="p">[</span><span class="n">postorderSize</span> <span class="o">-</span> <span class="mi">2</span><span class="p">];</span>
+        <span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">preorderSize</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">preorder</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">right_val</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">index</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+                        <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">l_pre</span> <span class="o">=</span> <span class="n">preorder</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">l_pre_sz</span> <span class="o">=</span> <span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">l_post</span> <span class="o">=</span> <span class="n">postorder</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">l_post_sz</span> <span class="o">=</span> <span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="o">*</span><span class="n">r_pre</span> <span class="o">=</span> <span class="n">preorder</span> <span class="o">+</span> <span class="n">index</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">r_pre_sz</span> <span class="o">=</span> <span class="n">preorderSize</span> <span class="o">-</span> <span class="n">index</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">r_post</span> <span class="o">=</span> <span class="n">postorder</span> <span class="o">+</span> <span class="p">(</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="n">r_post_sz</span> <span class="o">=</span> <span class="n">postorderSize</span> <span class="o">-</span> <span class="n">index</span><span class="p">;</span>
+
+        <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">=</span> <span class="n">constructFromPrePost</span><span class="p">(</span><span class="n">l_pre</span><span class="p">,</span> <span class="n">l_pre_sz</span><span class="p">,</span> <span class="n">l_post</span><span class="p">,</span> <span class="n">l_post_sz</span><span class="p">);</span>
+        <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">=</span> <span class="n">constructFromPrePost</span><span class="p">(</span><span class="n">r_pre</span><span class="p">,</span> <span class="n">r_pre_sz</span><span class="p">,</span> <span class="n">r_post</span><span class="p">,</span> <span class="n">r_post_sz</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">root</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>以上三个题目分别使用遍历信息得出一棵树，前序+中序、后序+中序都是可以得到唯一的树，
+但前序+后序是没法得出唯一的树。
+前序和后序遍历是没法把确认左右子树的，唯有中序遍历可以分辨左右子树。所以前序和后序遍历没法唯一确定一个树。</p>
+
+<h2 id="leetcode_912-sort-an-array"><a href="https://leetcode.com/problems/sort-an-array/description/">leetcode_912 sort an array</a></h2>
+<p>这题的难点是使用时间复杂度小于$\mathcal{O}(nlog(n))$的排序算法
+这题我使用merge sort来演示，merge sort本质上是在问题域中使用缩小问题的方式，把待处理的数据以树的结构分解，之后再依次合并，这样可以有效的控制时间复杂度再目标以内。</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="o">*</span><span class="nf">sort</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">left</span><span class="p">,</span> <span class="kt">int</span> <span class="n">left_sz</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">right</span><span class="p">,</span> <span class="kt">int</span> <span class="n">right_sz</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="n">res_sz</span> <span class="o">=</span> <span class="n">left_sz</span> <span class="o">+</span> <span class="n">right_sz</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">res</span> <span class="o">=</span> <span class="n">calloc</span><span class="p">(</span><span class="n">res_sz</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+        <span class="kt">int</span> <span class="n">res_count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+        <span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">left_sz</span> <span class="o">||</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">right_sz</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">left_sz</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">while</span> <span class="p">(</span><span class="n">j</span> <span class="o">&lt;</span> <span class="n">right_sz</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="n">res</span><span class="p">[</span><span class="n">res_count</span><span class="p">]</span> <span class="o">=</span> <span class="n">right</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+                                <span class="n">res_count</span><span class="o">++</span><span class="p">;</span>
+                                <span class="n">j</span><span class="o">++</span><span class="p">;</span>
+                        <span class="p">}</span>
+                        <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">j</span> <span class="o">==</span> <span class="n">right_sz</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="k">while</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">left_sz</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="n">res</span><span class="p">[</span><span class="n">res_count</span><span class="p">]</span> <span class="o">=</span> <span class="n">left</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+                                <span class="n">res_count</span><span class="o">++</span><span class="p">;</span>
+                                <span class="n">i</span><span class="o">++</span><span class="p">;</span>
+                        <span class="p">}</span>
+                        <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+                <span class="p">}</span>
+
+                <span class="k">if</span> <span class="p">(</span><span class="n">left</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">right</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="p">{</span>
+                        <span class="n">res</span><span class="p">[</span><span class="n">res_count</span><span class="p">]</span> <span class="o">=</span> <span class="n">left</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+                        <span class="n">res_count</span><span class="o">++</span><span class="p">;</span>
+                        <span class="n">i</span><span class="o">++</span><span class="p">;</span>
+                <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                        <span class="n">res</span><span class="p">[</span><span class="n">res_count</span><span class="p">]</span> <span class="o">=</span> <span class="n">right</span><span class="p">[</span><span class="n">j</span><span class="p">];</span>
+                        <span class="n">res_count</span><span class="o">++</span><span class="p">;</span>
+                        <span class="n">j</span><span class="o">++</span><span class="p">;</span>
+                <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="o">*</span><span class="nf">merge_sort</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">nums</span><span class="p">,</span> <span class="kt">int</span> <span class="n">size</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">res</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+                <span class="cm">/* int *res = calloc(1, sizeof(int)); */</span>
+                <span class="cm">/* *res = *nums; */</span>
+                <span class="cm">/* return res; */</span>
+                <span class="k">return</span> <span class="n">nums</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="kt">int</span> <span class="n">mid</span> <span class="o">=</span> <span class="n">size</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+
+        <span class="kt">int</span> <span class="n">left_sz</span> <span class="o">=</span> <span class="n">mid</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="n">right_sz</span> <span class="o">=</span> <span class="n">size</span> <span class="o">-</span> <span class="n">mid</span><span class="p">;</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">left</span> <span class="o">=</span> <span class="n">merge_sort</span><span class="p">(</span><span class="n">nums</span><span class="p">,</span> <span class="n">left_sz</span><span class="p">);</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">right</span> <span class="o">=</span> <span class="n">merge_sort</span><span class="p">(</span><span class="n">nums</span> <span class="o">+</span> <span class="n">mid</span><span class="p">,</span> <span class="n">right_sz</span><span class="p">);</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="n">sort</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">left_sz</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">right_sz</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="o">*</span><span class="nf">sortArray</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">nums</span><span class="p">,</span> <span class="kt">int</span> <span class="n">numsSize</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">returnSize</span><span class="p">)</span>
+<span class="p">{</span>
+        <span class="kt">int</span> <span class="o">*</span><span class="n">res</span> <span class="o">=</span> <span class="n">merge_sort</span><span class="p">(</span><span class="n">nums</span><span class="p">,</span> <span class="n">numsSize</span><span class="p">);</span>
+        <span class="o">*</span><span class="n">returnSize</span> <span class="o">=</span> <span class="n">numsSize</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">res</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>merge sort没有什么难点，从代码形式上看merge sort是一种对问题树的后序遍历。这个算法的关键是有序数组的合并。</p>
+
+<h2 id="引用">引用</h2>
+<p><a href="https://epaperpress.com/sortsearch/has.html">数据结构的网站</a></p>
+
+<h2 id="后">后</h2>
+<p>这周有些不舒服，没有完成树的很多背景知识，二叉搜索树和别的树的介绍得下周才行了。
+这周只是介绍了二叉树的遍历方式，如果让我一句话概括一下，树和递归有很强的联系，从某种程度上说，递归本身就是一种树。
+树相关的题目难度很低，基本上可以通过遍历树的方式和建立递归，这两种方式解决。下周会详细介绍更多的树的类型，他们各自有各自的
+性质，这些性质保证了算法的性质。需要的是理解这些性质。</p>
+
+<p>Sun Mar 16 10:26:58 PM CST 2025</p>
+
+
+</article>
+
+<div class="page-navigation">
+	
+		<a class="home" href="https://niclas3.github.io" title="Back to Homepage">Home</a>
+  
+		<span> &middot; </span>
+    <a class="prev" href="https://niclas3.github.io/a-rts_w3_data_structions2" title="PREV: [A]RTS 数据结构的基石2">&gt;&gt;</a>
+  
+</div>
+
+		</main>
+
+		<div class="footer">
+  <span class="block">😝 <a href="/" title="">曰 朝三而暮四 众狙皆怒 然则朝四而暮三 众狙皆悦</a> by <a href="http://niclas3.github.io">M</a>.</span>
+  <span class="block">&copy; 2025 niclas</span>
+</div>
+
+
+	</body>
+
+</html>
