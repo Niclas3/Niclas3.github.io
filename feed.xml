@@ -7,6 +7,374 @@
     
       
         <item>
+          <title>[A]RTS 数据结构的基石4</title>
+          <description>&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+
+&lt;p&gt;🌲树有很多形态这周我会深入这些形态，这篇是&lt;a href=&quot;/a-rts_w4_data_structions3&quot;&gt;上篇&lt;/a&gt;的补充。&lt;/p&gt;
+
+&lt;h2 id=&quot;binary_tree&quot;&gt;二叉搜索树&lt;/h2&gt;
+&lt;p&gt;二叉搜索树（binary search tree）也就是&lt;strong&gt;二叉查找树&lt;/strong&gt;。这个树类型是在二叉树性质的基础上
+增加了3个新性质。&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;若任意结点的左子树不空，则&lt;strong&gt;左子树的所有结点&lt;/strong&gt;的值均&lt;strong&gt;小于&lt;/strong&gt;它的&lt;strong&gt;根结点&lt;/strong&gt;的值；&lt;/li&gt;
+  &lt;li&gt;若任意结点的右子树不空，则&lt;strong&gt;右子树的所有结点&lt;/strong&gt;的值均&lt;strong&gt;大于&lt;/strong&gt;它的&lt;strong&gt;根结点&lt;/strong&gt;的值；&lt;/li&gt;
+  &lt;li&gt;任意节点的左右子树都分别是二叉查找树。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;这三个性质为了让数据的查找和插入时间为$\mathcal{O}(log_n)$。与之前我们聊过的&lt;a href=&quot;/a-rts_w3_data_structions2#binary_search&quot;&gt;二分搜索&lt;/a&gt;类似
+二叉搜索树是把二分搜索的逻辑显式的嵌入了数据结构中，如此这样大幅下降了查找和插入的时间。值的一提的是一些抽象数据结构也是由这个基本数据结构
+所构成的比如集合、multiset、dictionary。&lt;/p&gt;
+
+&lt;div style=&quot;background-color:#d0e7f9; color:#4d4d4d; padding:10px; border-radius:5px;&quot;&gt;
+这里可以给我一些想法，我对数据结构的理解有了不同的角度，数据结构如果从性质入手来实现也许不是很直观，但把数据结构再解构，从数据解构的查找，插入，删除，修改这几个方面
+来想很多数据结构就很容易处理了。比如如果我需要实现dictionary，也许一个hash
+table就可以处理，但是把字典这个数据解构分解，其实只是需要找到一种方案插入和查找字典中的元素就可以了
+&lt;/div&gt;
+&lt;p&gt;二叉查找树性质非常完美，但如果你需要对这个数据结构进行修改(比如插入或者删除某些数据)，那就有可能会让这个特征消失从而增加各项操作的时间，它的最坏情况也很好理解，通过一系列运算让整个
+数据结构变成一个链表所以最差的情况是$\mathcal{O}(n)$。为了对抗这个衰变之后又出现了&lt;a href=&quot;#avl_tree&quot;&gt;AVL树&lt;/a&gt;、&lt;a href=&quot;#red_black_tree&quot;&gt;红黑树&lt;/a&gt;、 &lt;a href=&quot;#jump_table&quot;&gt;跳表&lt;/a&gt;、 &lt;a href=&quot;#b_tree&quot;&gt;B树&lt;/a&gt;一系列的数据解构来解决.&lt;/p&gt;
+
+&lt;h2 id=&quot;Tree_rotation&quot;&gt;树旋转&lt;/h2&gt;
+&lt;p&gt;在谈论各种不同的树类型的时候我们需要了解一种对二叉树的操作，树旋转。&lt;br /&gt;
+&lt;strong&gt;树旋转&lt;/strong&gt;操作&lt;strong&gt;不会&lt;/strong&gt;影响这棵树的&lt;strong&gt;中序遍历&lt;/strong&gt;结点顺序，但会影响这棵树的&lt;strong&gt;结构&lt;/strong&gt;。&lt;br /&gt;
+&lt;strong&gt;树的结构&lt;/strong&gt;直接影响到对这棵树的操作的时间复杂度。树旋转的目的是在逻辑顺序不变的情况下保持高效率的树结构&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/20250317_data_structure_04_btr.svg&quot; alt=&quot;tree rotation&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;左边的二叉树的中序遍历是(a、黄、b、绿、y) 右边的二叉树的中序遍历也是(a、黄、b、绿、y)，但是两棵树的结构不一样了。&lt;/p&gt;
+
+&lt;p&gt;由于树旋转有很多定义，这篇文章采用的是&lt;strong&gt;旋转方向&lt;/strong&gt;是&lt;strong&gt;节点的移动方向&lt;/strong&gt;。按照上图所演示，以黄色节点为根节点，从左往右的旋转是左旋。&lt;/p&gt;
+
+&lt;p&gt;我们可以通过使用树旋转让目标树在中序遍历相同的情况下，20250317_data_structure_04_tree_rotation.svg仍然保持二叉树的结构而避免劣化成&lt;strong&gt;链表&lt;/strong&gt;。&lt;/p&gt;
+
+&lt;h2 id=&quot;执行树旋转&quot;&gt;执行树旋转&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/20250317_data_structure_04_tree_rotation.svg&quot; alt=&quot;tree_rotation_detail&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;左旋转（Left Rotation）&lt;/strong&gt;：将一个节点的右子节点“上提”作为新的根，原根节点变成新根的左子节点。&lt;br /&gt;
+&lt;strong&gt;右旋转（Right Rotation）&lt;/strong&gt;：将一个节点的左子节点“上提”作为新的根，原根节点变成新根的右子节点。&lt;br /&gt;&lt;/p&gt;
+
+&lt;p&gt;右旋转的核心：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;选择一个节点（X）&lt;/li&gt;
+  &lt;li&gt;将X的左子节点（Y）上提为新的根。&lt;/li&gt;
+  &lt;li&gt;X变成Y的右子节点。&lt;/li&gt;
+  &lt;li&gt;如果Y原来有右子结点，这个右子节点会变成X的左子节点。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;我们沿用上篇文章的树的序列化表示假设存在一种树&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;T=Q(P(A,B), C())&lt;/code&gt;我们对它做右旋转。&lt;/p&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;//目标树&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt;
+     &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; \
+    &lt;span class=&quot;n&quot;&gt;P&lt;/span&gt;   &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; \
+  &lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;   &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;右旋过程&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Q的左子结点是P，上提P为新的根&lt;/li&gt;
+  &lt;li&gt;Q变成P的右子结点。&lt;/li&gt;
+  &lt;li&gt;原来的P有右子结点B，所以B需要变成Q的左子结点。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;//右旋后的树&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;P&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; \
+  &lt;span class=&quot;n&quot;&gt;A&lt;/span&gt;   &lt;span class=&quot;n&quot;&gt;Q&lt;/span&gt;
+     &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; \
+    &lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;   &lt;span class=&quot;n&quot;&gt;C&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;左旋是一种镜像操作，这里给出C代码代替。&lt;/p&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;// left rotation&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;LL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node_t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node_t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pnode&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;assert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;node_t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node_r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pnode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;pnode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node_r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;pnode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node_r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;NULL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;node_t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node_r_l&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node_r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node_r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;node_r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node_r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node_r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;node_t&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;node_r_r&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node_r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;node_r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;node_r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node_r_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;node_r_l&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node_r_r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;// has left no right&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;node_r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;node_r&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;right&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;node_r_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;树旋转是保持二叉树平衡的关键。&lt;/p&gt;
+
+&lt;h2 id=&quot;avl_tree&quot;&gt;AVL树&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;AVL树&lt;/strong&gt;（Adelson-Velskii and Landis tree）是一种自平衡二叉树，我们在&lt;a href=&quot;#binary_tree&quot;&gt;上一节&lt;/a&gt;提到过二叉树虽然各项操作的时间复杂度都很优秀($\mathcal{O}(log_n)$)但是由于对二叉搜索树的插入和删除会改变树
+的结构，这样树的特征就会消失。如果存在一种可以始终保持二叉树结构的数据结构这样就可以通过机制对抗二叉搜索树的结构散失提供一种解决方案。&lt;/p&gt;
+
+&lt;div style=&quot;background-color:#d0e7f9; color:#4d4d4d; padding:10px; border-radius:5px;&quot;&gt;
+  &lt;p&gt;可以用&lt;strong&gt;熵增&lt;/strong&gt;的概念来理解AVL树做的事情。因为对二叉树的插入和删除操作，对于二叉树来说相当于熵增，而AVL树提供一系列方案
+来试图让这棵树变得有规律，这就是&lt;strong&gt;熵减&lt;/strong&gt;。&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;时间复杂度&lt;/th&gt;
+      &lt;th&gt;平均&lt;/th&gt;
+      &lt;th&gt;最差&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;插入&lt;/td&gt;
+      &lt;td&gt;$\mathcal{O}(logn)$&lt;/td&gt;
+      &lt;td&gt;$\mathcal{O}(logn)$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;删除&lt;/td&gt;
+      &lt;td&gt;$\mathcal{O}(logn)$&lt;/td&gt;
+      &lt;td&gt;$\mathcal{O}(logn)$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;搜索&lt;/td&gt;
+      &lt;td&gt;$\mathcal{O}(logn)$&lt;/td&gt;
+      &lt;td&gt;$\mathcal{O}(logn)$&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;avl树计算熵平衡因子&quot;&gt;AVL树计算熵—平衡因子&lt;/h2&gt;
+&lt;p&gt;为了保持一种二叉树结构，AVL树利用了一个叫做&lt;strong&gt;平衡因子&lt;/strong&gt;的概念来描述目标的树是否需要“整理” &lt;br /&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;节点的&lt;strong&gt;平衡因子&lt;/strong&gt;是它的&lt;strong&gt;&lt;em&gt;左子树&lt;/em&gt;的高度&lt;/strong&gt;减去它&lt;strong&gt;右子树高度&lt;/strong&gt;。&lt;br /&gt;&lt;/li&gt;
+  &lt;li&gt;平衡因子是&lt;strong&gt;1、0或-1&lt;/strong&gt;的节点被认为是&lt;strong&gt;平衡&lt;/strong&gt;的。&lt;br /&gt;&lt;/li&gt;
+  &lt;li&gt;当带有&lt;strong&gt;-2或2&lt;/strong&gt;的平衡因子节点则是&lt;strong&gt;不平衡&lt;/strong&gt;的，这时候就需要重新平衡这棵树。&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;avl旋转&quot;&gt;AVL旋转&lt;/h2&gt;
+&lt;p&gt;这里的AVL旋转就是树旋转，树旋转我们已经介绍过了。avl旋转就是在发现根节点的平衡因子大于2或者小于-2的时候
+进行旋转。这里分为单次旋转（single rotation），和两次旋转（double rotation）。&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/20250317_data_structure_04_tree_rebalancing.jpg&quot; alt=&quot;tree_rotation&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;ASCII 演示如下
+每个节点右侧是他们的平衡因子。&lt;/p&gt;
+&lt;h2 id=&quot;右旋&quot;&gt;右旋&lt;/h2&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;        &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+       &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;
+  &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+ &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;
+&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;左旋&quot;&gt;左旋&lt;/h2&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+   \
+    &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+     \
+      &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h2 id=&quot;右左旋转right-left-rotation&quot;&gt;右左旋转（Right-Left Rotation）&lt;/h2&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+   \
+    &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;
+  &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;先对节点3右旋&lt;/p&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+   \
+    &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+     \
+      &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;再对节点1左旋&lt;/p&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;
+      &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+     &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;   \
+  &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;左右旋转left-right-rotation&quot;&gt;左右旋转（Left-right rotation）&lt;/h2&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;      &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+     &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;
+    &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+     \
+      &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;先对节点1左旋&lt;/p&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;      &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+     &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;
+    &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;
+  &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;再对节点3右旋&lt;/p&gt;
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;    &lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+   &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;   \
+  &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;这四种旋转模式针对四种状态。&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;对目标树的左子树的左子节点添加节点 (LL)&lt;/li&gt;
+  &lt;li&gt;对目标树的左子树的右子节点添加节点 (LR)&lt;/li&gt;
+  &lt;li&gt;对目标树的右子树的左子节点添加节点 (RL)&lt;/li&gt;
+  &lt;li&gt;对目标树的右子树的右子节点添加节点 (RR)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;AVL树的各项操作的时间复杂度都很优秀，由于在插入和删除时需要保持平衡，所以在频繁插入和删除场景时候成本很高。
+在查多改少的情况更适合使用AVL树，如果需要频繁插入和删除就可能需要选择&lt;strong&gt;红黑树&lt;/strong&gt;了。&lt;/p&gt;
+
+&lt;h2 id=&quot;b_tree&quot;&gt;B tree&lt;/h2&gt;
+
+&lt;p&gt;之前我们讨论的树结构都是假设整棵树都在内存里，由于内存是有限的所以总会出现一种没法全部加载到内存里的树结构，
+这样即使我们使用了二叉树结构也会因为内存总量的原因导致需要进行更多次的页面的写入写出，大概需要$logN$次I/O访问 N是数据总量。
+为了在一次访问I/O可以获得更多的数据，压缩树的高度变成一种方法。B树就是Rudolf Bayer针对如此困难发明出来的。&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;时间复杂度&lt;/th&gt;
+      &lt;th&gt;平均&lt;/th&gt;
+      &lt;th&gt;最差&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;插入&lt;/td&gt;
+      &lt;td&gt;$\mathcal{O}(logn)$&lt;/td&gt;
+      &lt;td&gt;$\mathcal{O}(logn)$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;删除&lt;/td&gt;
+      &lt;td&gt;$\mathcal{O}(logn)$&lt;/td&gt;
+      &lt;td&gt;$\mathcal{O}(logn)$&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;搜索&lt;/td&gt;
+      &lt;td&gt;$\mathcal{O}(logn)$&lt;/td&gt;
+      &lt;td&gt;$\mathcal{O}(logn)$&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h2 id=&quot;b树的阶&quot;&gt;B树的阶&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;B树&lt;/strong&gt;在实际使用的时候会带上它的阶，一般称之为&lt;strong&gt;m阶的B树&lt;/strong&gt;。
+m阶B树是指满足如下属性的树&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;每个节点&lt;strong&gt;最多&lt;/strong&gt;有m个子节点&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;除了根节点及叶子节点&lt;/strong&gt;外，每个节点&lt;strong&gt;至少&lt;/strong&gt;有 $ \lceil \frac{m}{2} \rceil $ 个子节点&lt;/li&gt;
+  &lt;li&gt;根节点&lt;strong&gt;至少&lt;/strong&gt;有&lt;strong&gt;2个&lt;/strong&gt;子节点（除非它是一个叶子）&lt;/li&gt;
+  &lt;li&gt;所有的叶子都出现在&lt;strong&gt;同一级别&lt;/strong&gt;，并且不携带任何信息&lt;/li&gt;
+  &lt;li&gt;具有k个子节点的&lt;strong&gt;非叶节点&lt;/strong&gt;包含k-1个键。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;img src=&quot;/assets/20250317_data_structure_04_Btree.jpg&quot; alt=&quot;b-tree in order 4&quot; /&gt;
+4阶B树&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;b树的插入&quot;&gt;B树的插入&lt;/h2&gt;
+&lt;p&gt;B树插入的主要分4种情况&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;直接插入&lt;/li&gt;
+  &lt;li&gt;插入导致叶子节点溢出&lt;/li&gt;
+  &lt;li&gt;插入导致多个向上分裂&lt;/li&gt;
+  &lt;li&gt;分裂根节点&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;假设需要插入&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;42&lt;/code&gt;到如上4阶B树&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;查找根节点发现&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;21&amp;lt;42&amp;lt;48&lt;/code&gt;所以查找第二层第2个节点{25,31,41}&lt;/li&gt;
+  &lt;li&gt;继续比较 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;41&amp;lt;42&lt;/code&gt;，应该插入第三层{41,43,46}，由于这个节点已经超过了3个也就是m-1,这时候需要分裂这个节点{41,43,46,42}42会被提升节点会分裂成两个{41}{43,46}&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;42&lt;/code&gt; 被提升到 {25,31,41}，这时候这个节点也满了，继续找中间键上移，&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;31&lt;/code&gt;，节点分裂成{25}、{41,42}&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;31&lt;/code&gt; 被提升到 {21,48,72}，这时候根节点也满了，继续找中间键&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;31&lt;/code&gt;，这个节点继续分裂成，{21}、{48,72}&lt;/li&gt;
+  &lt;li&gt;&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;31&lt;/code&gt; 这时候 &lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;31&lt;/code&gt; 就变成了新的根节点。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;有趣的是B树增长方向是根的方向&lt;/p&gt;
+
+&lt;h2 id=&quot;b树的删除&quot;&gt;B树的删除&lt;/h2&gt;
+&lt;p&gt;B树的删除主要分为3种情况&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;删除的键在叶子节点&lt;/li&gt;
+  &lt;li&gt;删除的键在内部节点&lt;/li&gt;
+  &lt;li&gt;删除后节点键数不足（小于t-1），需要借位（旋转）或者合并来维持平衡。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h4 id=&quot;情况1删除叶子节点&quot;&gt;情况1：删除叶子节点&lt;/h4&gt;
+&lt;p&gt;规则：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;直接删除
+    &lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;     &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;    \
+&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;40&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 删除10,因为10在叶子节点，可以直接删除&lt;/span&gt;
+     &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+       \
+     &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;40&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h4 id=&quot;情况2删除内部节点&quot;&gt;情况2：删除内部节点&lt;/h4&gt;
+&lt;p&gt;规则：&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;用前驱（左子树的最大值）或后继（右子树最小值）替换被删除的键&lt;/li&gt;
+  &lt;li&gt;然后递归的删除前驱或者后继键（最后会落入叶子节点，回到情况1）&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;div class=&quot;language-c highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;       &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;40&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;    \
+  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;60&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 删除40, 因为40是内部节点&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 左子树的最大值 20 或者 右子树的最小值50可以替换40&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// 50 替换 40, 删除50&lt;/span&gt;
+       &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;50&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+      &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;    \
+  &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;60&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;h4 id=&quot;情况3删除导致节点键数不足&quot;&gt;情况3：删除导致节点键数不足&lt;/h4&gt;
+&lt;p&gt;如果删除某个键导致节点键数小于 t-1 ，则需要借位（rotation）或合并来恢复平衡。&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;借位 Rotation&lt;/li&gt;
+  &lt;li&gt;合并 Merge&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;假设需要删除第二层的&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;59&lt;/code&gt;到如上4阶B树&lt;/p&gt;
+&lt;ol&gt;
+  &lt;li&gt;这时候是情况2需要在前驱{48,49,50}最大值或者后继{59,68}最小值，我们选&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;50&lt;/code&gt;替换&lt;code class=&quot;language-plaintext highlighter-rouge&quot;&gt;59&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id=&quot;后&quot;&gt;后&lt;/h2&gt;
+&lt;p&gt;这是上周的内容，上周有一些事情没有发表。这次提供了一些常见的二叉查找树的数据结构，之后会提到红黑树和跳表这两个使用最广泛的树。&lt;/p&gt;
+
+&lt;p&gt;Sat Mar 29 11:19:10 AM CST 2025&lt;/p&gt;
+</description>
+          <pubDate>2025-03-17T00:00:00+08:00</pubDate>
+          <link>https://niclas3.github.io/arts_w5_data_structions4</link>
+          <guid isPermaLink="true">https://niclas3.github.io/arts_w5_data_structions4</guid>
+        </item>
+      
+    
+      
+        <item>
           <title>[A]RTS 数据结构的基石3</title>
           <description>&lt;h2 id=&quot;树与递归&quot;&gt;树与递归&lt;/h2&gt;
 
